@@ -1,34 +1,55 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import useLogin from '../../hooks/useLogin';
 
 const Login = () => {
-    const errors = {};
-    const loading = false;
-    const loginWithGoogle = () => alert("Google login giả lập");
-    const clearError = () => { };
-
-
-
-    const [user, setUser] = useState({ username: '', password: '' });
-
+    const [user, setUser] = useState({
+        username: "",
+        password: ""
+    });
+    const {
+        errors,
+        loading,
+        loginUser,
+        loginWithGoogle,
+        handleUrlErrors,
+        clearError
+    } = useLogin();
     const info = [
-        { label: 'Tên đăng nhập', type: 'text', field: 'username' },
-        { label: 'Mật khẩu', type: 'password', field: 'password' },
+        {
+            label: "Tên đăng nhập",
+            type: "text",
+            field: "username"
+        }, {
+            label: "Mật khẩu",
+            type: "password",
+            field: "password"
+        }
+
     ];
 
     const handleChange = (value, field) => {
-        setUser((prev) => ({ ...prev, [field]: value }));
+        setUser(prev => ({ ...prev, [field]: value }));
+        // Clear error khi user bắt đầu nhập
         clearError(field);
     };
 
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        ///
+        await loginUser(user);
     };
 
+    const handleOutBoundLogin = () => {
+        loginWithGoogle();
+    }
+
+
+    // xu ly url errors khi component mount
     useEffect(() => {
-        ///
-    }, []);
+        handleUrlErrors();
+    }, [handleUrlErrors]);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center px-4">
@@ -115,7 +136,7 @@ const Login = () => {
                         {/* Social buttons */}
                         <div className="flex gap-4 mb-6">
                             <button
-                                onClick={loginWithGoogle}
+                                onClick={handleOutBoundLogin}
                                 className="flex-1 flex items-center justify-center gap-2 border border-gray-300 py-2 rounded-lg text-sm font-medium hover:border-blue-500"
                             >
                                 <img

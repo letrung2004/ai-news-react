@@ -1,38 +1,71 @@
 import React, { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
+import useRegister from '../../hooks/useRegister';
+import useLogin from '../../hooks/useLogin';
 
 const Register = () => {
-    const errors = {};
-    const loading = false;
-    const loginWithGoogle = () => alert("Google login giả lập");
-    const clearError = () => { };
-
-
-
-    const [user, setUser] = useState({ username: '', password: '' });
-
     const info = [
-        { label: 'Họ của bạn', type: 'text', field: 'lastName' },
-        { label: 'Tên của bạn', type: 'text', field: 'firstName' },
-        { label: 'Email', type: 'email', field: 'email' },
-        { label: 'Tên đăng nhập', type: 'text', field: 'username' },
-        { label: 'Mật khẩu', type: 'password', field: 'password' },
-        { label: 'Xác nhận mật khẩu', type: 'password', field: 'confirm' },
+        {
+            label: "Họ của bạn",
+            type: "text",
+            field: "lastName"
+        },
+        {
+            label: "Tên của bạn",
+            type: "text",
+            field: "firstName"
+        },
+        {
+            label: "Email",
+            type: "email",
+            field: "email"
+        },
+        {
+            label: "Tên đăng nhập",
+            type: "text",
+            field: "username"
+        }, {
+            label: "Mật khẩu",
+            type: "password",
+            field: "password"
+        },
+        {
+            label: "Xác nhận mật khẩu",
+            type: "password",
+            field: "confirm"
+        }
+
     ];
+    const [user, setUser] = useState({});
+    const { register, errors, loading, setErrors } = useRegister();
+    const {
+        loginWithGoogle,
+        handleUrlErrors,
+    } = useLogin();
+
+    const setState = (value, field) => {
+        setUser({ ...user, [field]: value });
+    }
 
     const handleChange = (value, field) => {
         setUser((prev) => ({ ...prev, [field]: value }));
-        clearError(field);
+        setErrors((prev) => ({ ...prev, [field]: "" }));
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        ///
+        await register(user);
     };
 
+    const handleOutBoundLogin = () => {
+        loginWithGoogle();
+    }
+
     useEffect(() => {
-        ///
-    }, []);
+        handleUrlErrors();
+    }, [handleUrlErrors]);
+
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center px-4">
@@ -119,7 +152,7 @@ const Register = () => {
                         {/* Social buttons */}
                         <div className="flex gap-4 mb-6">
                             <button
-                                onClick={loginWithGoogle}
+                                onClick={handleOutBoundLogin}
                                 className="flex-1 flex items-center justify-center gap-2 border border-gray-300 py-2 rounded-lg text-sm font-medium hover:border-blue-500"
                             >
                                 <img

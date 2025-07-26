@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthProvider";
 const Header = () => {
     const [activeCategory, setActiveCategory] = useState('Trang chủ');
     const categories = [
@@ -13,6 +14,38 @@ const Header = () => {
         console.log('Searching for:', searchQuery);
     };
 
+
+    const { user, logout } = useAuth();
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+    // Debug: kiểm tra giá trị user
+    console.log("User trong ReaderHeader:", user);
+
+    const handleLogout = () => {
+        logout();
+        setIsDropdownOpen(false);
+    };
+
+    const toggleDropdown = () => {
+        setIsDropdownOpen(!isDropdownOpen);
+    };
+
+    // Đóng dropdown khi click ra ngoài
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+
     return (
         <>
             {/* Top Header */}
@@ -25,19 +58,57 @@ const Header = () => {
                         <span>Liên Hệ</span>
                     </div>
                     <div className="flex items-center space-x-4">
-                        <Link
-                            to="/register"
-                            className="hover:text-green-400 transition-colors cursor-pointer"
-                        >
-                            Đăng ký
-                        </Link>
-                        <Link
-                            to="/login"
-                            className="hover:text-green-400 transition-colors cursor-pointer"
-                        >
-                            Đăng nhập
-                        </Link>
+                        {user ? (
+                            <div className="relative" ref={dropdownRef}>
+                                <button
+                                    onClick={toggleDropdown}
+                                    className="flex items-center gap-2 bg-transparent border-none text-inherit cursor-pointer p-0"
+                                >
+                                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                                        {(user.username || 'U').charAt(0).toUpperCase()}
+                                    </div>
+                                    <span>{user.username || 'User'}</span>
+                                    <i className="fas fa-chevron-down text-xs"></i>
+                                </button>
+
+                                {isDropdownOpen && (
+                                    <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-md min-w-[160px] text-sm z-50">
+                                        <Link
+                                            to="/profile"
+                                            className="flex items-center px-4 py-3 text-gray-800 hover:bg-gray-100 border-b border-gray-100 gap-3"
+                                        >
+                                            <i className="fas fa-user text-gray-600 w-4"></i>
+                                            <span>Hồ sơ của bạn</span>
+                                        </Link>
+
+                                        <button
+                                            onClick={handleLogout}
+                                            className="flex items-center w-full px-4 py-3 text-left text-gray-800 hover:bg-gray-100 gap-3"
+                                        >
+                                            <i className="fas fa-sign-out-alt text-gray-600 w-4"></i>
+                                            <span>Đăng xuất</span>
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <>
+                                <Link
+                                    to="/register"
+                                    className="hover:text-green-400 transition-colors cursor-pointer"
+                                >
+                                    Đăng ký
+                                </Link>
+                                <Link
+                                    to="/login"
+                                    className="hover:text-green-400 transition-colors cursor-pointer"
+                                >
+                                    Đăng nhập
+                                </Link>
+                            </>
+                        )}
                     </div>
+
 
                 </div>
             </div>
@@ -47,7 +118,6 @@ const Header = () => {
                     <div className="text-center mb-8">
                         <h1
                             className="text-5xl font-bold cursor-pointer"
-                            onClick={() => setCurrentView('home')}
                         >
                             <span className="text-green-500">MAG</span>
                             <span className="text-gray-800">NEWS</span>

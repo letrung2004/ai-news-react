@@ -1,22 +1,37 @@
 import React, { useEffect, useState } from 'react';
+import useLogin from '../../hooks/useLogin';
 
 const SystemLogin = () => {
-    const [user, setUser] = useState({ username: '', password: '' });
-    const errors = {};
-    const loading = false;
-    const loginUser = () => { };
-    const handleUrlErrors = () => { };
-    const clearError = () => { };
-
+    const [user, setUser] = useState({
+        username: "",
+        password: ""
+    });
+    const {
+        errors,
+        loading,
+        loginUser,
+        handleUrlErrors,
+        clearError
+    } = useLogin();
     const info = [
-        { label: 'Tên đăng nhập', type: 'text', field: 'username' },
-        { label: 'Mật khẩu', type: 'password', field: 'password' },
+        {
+            label: "Tên đăng nhập",
+            type: "text",
+            field: "username"
+        }, {
+            label: "Mật khẩu",
+            type: "password",
+            field: "password"
+        }
+
     ];
 
     const handleChange = (value, field) => {
-        setUser((prev) => ({ ...prev, [field]: value }));
+        setUser(prev => ({ ...prev, [field]: value }));
         clearError(field);
     };
+
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -25,7 +40,7 @@ const SystemLogin = () => {
 
     useEffect(() => {
         handleUrlErrors();
-    }, []);
+    }, [handleUrlErrors]);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center px-4">

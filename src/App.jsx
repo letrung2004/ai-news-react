@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './App.css'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
 import HomePage from './pages/reader/HomePage'
 import Layout from './layouts/reader/Layout'
 import ArticlePage from './pages/reader/ArticlePage'
@@ -11,35 +11,54 @@ import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import AddArticle from './pages/manager/AddArticle'
 import SystemLogin from './pages/auth/SystemLogin'
+import { AuthProvider, useAuth } from './contexts/AuthProvider'
+import Authenticate from './pages/auth/Authenticate'
 
 
 function App() {
-  const [count, setCount] = useState(0)
+  const PrivateRoute = ({ element }) => {
+    const { user, loading } = useAuth();
+    const location = useLocation();
+
+    if (loading) return <div>Loading...</div>;
+
+    if (!user) {
+      if (location.pathname.startsWith("/admin") || location.pathname.startsWith("/editor")) {
+        return <Navigate to="/login-system" replace />;
+      }
+      return <Navigate to="/login" replace />;
+    }
+
+    return element;
+  };
 
   return (
     <>
-      <BrowserRouter>
-        <Routes>
-
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login-system" element={<SystemLogin />} />
-
-
-
-          <Route path="/" element={<Layout />} >
-            <Route index element={<HomePage />} />
-            <Route path="/aaaa" element={<ArticlePage />} />
-            <Route path="/bbbb" element={<ListArticle />} />
-          </Route>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Auth route */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/authenticate" element={<Authenticate />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login-system" element={<SystemLogin />} />
 
 
-          <Route path="/admin" element={<AdminLayout />} >
-            <Route index element={<AdminHome />} />
-            <Route path="/admin/add" element={<AddArticle />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+            {/* Reader route */}
+            <Route path="/" element={<Layout />} >
+              <Route index element={<HomePage />} />
+              <Route path="/aaaa" element={<ArticlePage />} />
+              <Route path="/bbbb" element={<ListArticle />} />
+            </Route>
+
+            {/* Admin route */}
+            <Route path="/admin" element={<AdminLayout />} >
+              <Route index element={<AdminHome />} />
+              <Route path="/admin/add" element={<AddArticle />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </>
   )
 }
