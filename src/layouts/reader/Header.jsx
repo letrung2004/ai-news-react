@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 const Header = () => {
     const [activeCategory, setActiveCategory] = useState('Trang chủ');
     const categories = [
@@ -24,19 +25,20 @@ const Header = () => {
                         <span>Liên Hệ</span>
                     </div>
                     <div className="flex items-center space-x-4">
-                        <button
-                            onClick={() => setCurrentView('register')}
+                        <Link
+                            to="/register"
                             className="hover:text-green-400 transition-colors cursor-pointer"
                         >
                             Đăng ký
-                        </button>
-                        <button
-                            onClick={() => setCurrentView('login')}
+                        </Link>
+                        <Link
+                            to="/login"
                             className="hover:text-green-400 transition-colors cursor-pointer"
                         >
                             Đăng nhập
-                        </button>
+                        </Link>
                     </div>
+
                 </div>
             </div>
             {/* Main Header */}

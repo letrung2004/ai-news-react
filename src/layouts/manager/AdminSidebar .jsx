@@ -24,13 +24,14 @@ const AdminSidebar = () => {
         <div className="fixed left-0 top-0 h-full w-64 bg-white shadow-lg border-r border-gray-200 z-40">
             {/* Logo */}
             <div className="p-6 border-b border-gray-200">
-                <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center">
-                        <i className="fas fa-newspaper text-white text-lg"></i>
-                    </div>
+                <div className="flex items-center space-x-3 pl-5">
                     <div>
-                        <h1 className="text-xl font-bold text-gray-900">
-                            News Portal <span className="text-red-500">Experts</span>
+                        <h1
+                            className="text-3xl font-bold cursor-pointer"
+                            onClick={() => setCurrentView('home')}
+                        >
+                            <span className="text-green-500">MAG</span>
+                            <span className="text-gray-800">NEWS</span>
                         </h1>
                         <p className="text-sm text-gray-500">Admin Panel</p>
                     </div>
@@ -45,7 +46,7 @@ const AdminSidebar = () => {
                             onClick={() => setActiveTab(item.id)}
                             className={`w-full flex items-center justify-between px-6 py-3 text-left transition-colors cursor-pointer whitespace-nowrap
                                 ${activeTab === item.id || (activeTab === "add-new" && item.id === "articles")
-                                    ? "bg-red-50 text-red-600 border-r-2 border-red-500"
+                                    ? "bg-green-50 text-green-600 border-r-2 border-green-500"
                                     : "text-gray-600 hover:bg-gray-50"
                                 }`}
                         >
@@ -73,7 +74,7 @@ const AdminSidebar = () => {
                                             onClick={() => setActiveTab(subItem.id)}
                                             className={`w-full flex items-center px-6 py-2 text-left text-sm transition-colors cursor-pointer whitespace-nowrap
                                                 ${activeTab === subItem.id
-                                                    ? "text-red-600 bg-red-50"
+                                                    ? "text-green-600 bg-green-50"
                                                     : "text-gray-600 hover:bg-gray-50"
                                                 }`}
                                         >
