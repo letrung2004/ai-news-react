@@ -7,7 +7,7 @@ export const ENDPOINTS = {
         REFRESH_TOKEN: '/identity/auth/refresh',
     },
     NEWS: {
-        // endpoints cho news
+        UPLOAD_IMAGE: '/content/image/upload',
     },
     ADMIN: {
         // endpoints cho admin

@@ -1,0 +1,36 @@
+.ck-editor__editable {
+    min-height: 650px !important;
+}
+
+.ck-editor__editable h1 {
+    font-size: 2.5rem !important;
+    font-weight: bold !important;
+    line-height: 1.2 !important;
+    margin: 1rem 0 !important;
+}
+
+.ck-editor__editable h2 {
+    font-size: 2rem !important;
+    font-weight: bold !important;
+    line-height: 1.3 !important;
+    margin: 0.8rem 0 !important;
+}
+
+.ck-editor__editable h3 {
+    font-size: 1.5rem !important;
+    font-weight: bold !important;
+    line-height: 1.4 !important;
+    margin: 0.6rem 0 !important;
+}
+
+.ck-editor__editable h4 {
+    font-size: 1.25rem !important;
+    font-weight: bold !important;
+    line-height: 1.4 !important;
+    margin: 0.5rem 0 !important;
+}
+
+.ck-editor__editable p {
+    margin: 0.5rem 0 !important;
+    line-height: 1.6 !important;
+}
