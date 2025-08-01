@@ -6,13 +6,13 @@ export const authService = {
 
     //dang nhap
     login: async (credentials) => {
-        const response = await AUTH_REQUEST.post(ENDPOINTS.AUTH.LOGIN, credentials);
+        const response = await API.post(ENDPOINTS.AUTH.LOGIN, credentials);
         return response.data;
     },
 
     // dang nhap OAuth voi google
     loginWithOAuth: async (authCode) => {
-        const response = await AUTH_REQUEST.post(
+        const response = await API.post(
             `${ENDPOINTS.AUTH.OAUTH}?code=${authCode}`
         );
         return response.data;
@@ -20,7 +20,7 @@ export const authService = {
 
     //lay thong tin my-info
     getUserInfo: async () => {
-        const response = await API.get(ENDPOINTS.AUTH.ME);
+        const response = await AUTH_REQUEST.get(ENDPOINTS.AUTH.ME);
         return response.data;
     },
 
@@ -31,7 +31,7 @@ export const authService = {
 
     //dang ky
     register: async (userRegisterData) => {
-        const res = await AUTH_REQUEST.post(ENDPOINTS.AUTH.REGISTER, userRegisterData);
+        const res = await API.post(ENDPOINTS.AUTH.REGISTER, userRegisterData);
         if (res.status !== 200 && res.status !== 201) {
             throw new Error(res.data.message);
         }
@@ -39,9 +39,11 @@ export const authService = {
 
     //refresh token
     refreshToken: async (token) => {
-        const response = await AUTH_REQUEST.post(ENDPOINTS.AUTH.REFRESH_TOKEN, {
+        const response = await API.post(ENDPOINTS.AUTH.REFRESH_TOKEN, {
             token: token
         });
         return response.data;
     }
+
+    //add user in admin
 };

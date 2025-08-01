@@ -37,12 +37,40 @@ export const editorConfig = {
     image: {
         toolbar: [
             'imageStyle:inline',
-            'imageStyle:block',
+            'imageStyle:alignLeft',
+            'imageStyle:alignCenter', 
+            'imageStyle:alignRight',
+            '|',
             'imageStyle:side',
             '|',
             'toggleImageCaption',
             'imageTextAlternative'
-        ]
+        ],
+        styles: [
+            'inline',
+            'alignCenter',
+            'alignLeft',
+            'alignRight',
+            'side'
+        ],
+        resizeOptions: [
+            {
+                name: 'resizeImage:original',
+                label: 'Original size',
+                value: null
+            },
+            {
+                name: 'resizeImage:50',
+                label: '50%',
+                value: '50'
+            },
+            {
+                name: 'resizeImage:75',
+                label: '75%',
+                value: '75'
+            }
+        ],
+        resizeUnit: '%'
     },
 
     table: {

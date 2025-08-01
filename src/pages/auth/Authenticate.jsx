@@ -4,7 +4,7 @@ import { Box, CircularProgress, Typography } from "@mui/material";
 import { authService } from "../../services/authService";
 import { tokenStorage } from "../../utils/storage";
 import { extractAuthCode, handleApiError } from "../../utils/helpers";
-import { useAuth } from "../../contexts/AuthProvider";
+import { useAuth } from "../../hooks/useAuth";
 
 
 export default function Authenticate() {

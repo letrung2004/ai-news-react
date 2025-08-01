@@ -14,7 +14,7 @@ export const AUTH_REQUEST = axios.create({
 });
 
 // interceptor tự động thêm token
-API.interceptors.request.use((config) => {
+AUTH_REQUEST.interceptors.request.use((config) => {
     const token = tokenStorage.getToken();
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -23,7 +23,7 @@ API.interceptors.request.use((config) => {
 });
 
 // kiem tra token khong hop le refresh lai token moi
-API.interceptors.response.use(
+AUTH_REQUEST.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;

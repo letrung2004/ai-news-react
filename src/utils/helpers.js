@@ -17,3 +17,16 @@ export const handleApiError = (error) => {
     }
     return 'Có lỗi xảy ra, vui lòng thử lại';
 };
+
+// Hàm xử lý và làm sạch HTML content từ CKEditor
+export const sanitizeHtmlContent = (htmlString) => {
+    if (!htmlString) return '';
+
+    // Loại bỏ các thẻ p trống hoặc chỉ có khoảng trắng
+    let cleaned = htmlString.replace(/<p>\s*<\/p>/g, '');
+
+    // Loại bỏ các thuộc tính style inline không cần thiết (tùy chọn)
+    // cleaned = cleaned.replace(/style="[^"]*"/g, '');
+
+    return cleaned;
+};

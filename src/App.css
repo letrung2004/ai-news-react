@@ -1,36 +1,245 @@
-.ck-editor__editable {
-    min-height: 650px !important;
+/* CSS tối ưu cho nội dung CKEditor */
+.ckeditor-content {
+    line-height: 1.8;
+    color: #374151;
 }
 
-.ck-editor__editable h1 {
-    font-size: 2.5rem !important;
-    font-weight: bold !important;
-    line-height: 1.2 !important;
-    margin: 1rem 0 !important;
+/* Tối ưu typography */
+.ckeditor-content h1,
+.ckeditor-content h2,
+.ckeditor-content h3,
+.ckeditor-content h4,
+.ckeditor-content h5,
+.ckeditor-content h6 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    color: #111827;
 }
 
-.ck-editor__editable h2 {
-    font-size: 2rem !important;
-    font-weight: bold !important;
-    line-height: 1.3 !important;
-    margin: 0.8rem 0 !important;
+.ckeditor-content h1 {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
 }
 
-.ck-editor__editable h3 {
-    font-size: 1.5rem !important;
-    font-weight: bold !important;
-    line-height: 1.4 !important;
-    margin: 0.6rem 0 !important;
+.ckeditor-content h2 {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
 }
 
-.ck-editor__editable h4 {
-    font-size: 1.25rem !important;
-    font-weight: bold !important;
-    line-height: 1.4 !important;
-    margin: 0.5rem 0 !important;
+.ckeditor-content h3 {
+    font-size: 1.5rem;
+    line-height: 2rem;
 }
 
-.ck-editor__editable p {
-    margin: 0.5rem 0 !important;
-    line-height: 1.6 !important;
+.ckeditor-content h4 {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+}
+
+.ckeditor-content h5 {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+}
+
+.ckeditor-content h6 {
+    font-size: 1rem;
+    line-height: 1.5rem;
+}
+
+/* Paragraph spacing */
+.ckeditor-content p {
+    margin-bottom: 1.25rem;
+    font-size: 1.125rem;
+    line-height: 1.8;
+}
+
+.ckeditor-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* List styles */
+.ckeditor-content ul,
+.ckeditor-content ol {
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+}
+
+.ckeditor-content ul li,
+.ckeditor-content ol li {
+    margin-bottom: 0.5rem;
+    font-size: 1.125rem;
+    line-height: 1.7;
+}
+
+.ckeditor-content ul {
+    list-style-type: disc;
+}
+
+.ckeditor-content ol {
+    list-style-type: decimal;
+}
+
+/* Blockquote */
+.ckeditor-content blockquote {
+    border-left: 4px solid #3b82f6;
+    background-color: #f8fafc;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: #4b5563;
+}
+
+.ckeditor-content blockquote p {
+    margin-bottom: 0;
+}
+
+/* Images */
+.ckeditor-content img {
+    max-width: 100%;
+    height: auto;
+    margin: 1.5rem 0;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.ckeditor-content figure {
+    margin: 1.5rem 0;
+    text-align: center;
+}
+
+.ckeditor-content figure img {
+    margin: 0 auto;
+}
+
+.ckeditor-content figure figcaption {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* Tables */
+.ckeditor-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    background-color: white;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.ckeditor-content table th,
+.ckeditor-content table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.ckeditor-content table th {
+    background-color: #f9fafb;
+    font-weight: 600;
+    color: #374151;
+}
+
+.ckeditor-content table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Links */
+.ckeditor-content a {
+    color: #3b82f6;
+    text-decoration: underline;
+    transition: color 0.2s ease;
+}
+
+.ckeditor-content a:hover {
+    color: #1d4ed8;
+}
+
+/* Code */
+.ckeditor-content code {
+    background-color: #f3f4f6;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    color: #dc2626;
+}
+
+.ckeditor-content pre {
+    background-color: #1f2937;
+    color: #f9fafb;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+}
+
+.ckeditor-content pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: 0.875rem;
+}
+
+/* Strong and emphasis */
+.ckeditor-content strong,
+.ckeditor-content b {
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.ckeditor-content em,
+.ckeditor-content i {
+    font-style: italic;
+}
+
+/* Horizontal rule */
+.ckeditor-content hr {
+    border: none;
+    border-top: 2px solid #e5e7eb;
+    margin: 2rem 0;
+}
+
+/* Alignment classes nếu CKEditor có */
+.ckeditor-content .text-center,
+.ckeditor-content [style*="text-align: center"] {
+    text-align: center;
+}
+
+.ckeditor-content .text-right,
+.ckeditor-content [style*="text-align: right"] {
+    text-align: right;
+}
+
+.ckeditor-content .text-left,
+.ckeditor-content [style*="text-align: left"] {
+    text-align: left;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .ckeditor-content {
+        font-size: 1rem;
+    }
+
+    .ckeditor-content h1 {
+        font-size: 1.875rem;
+    }
+
+    .ckeditor-content h2 {
+        font-size: 1.5rem;
+    }
+
+    .ckeditor-content h3 {
+        font-size: 1.25rem;
+    }
+
+    .ckeditor-content p,
+    .ckeditor-content ul li,
+    .ckeditor-content ol li {
+        font-size: 1rem;
+    }
 }

@@ -11,8 +11,10 @@ import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import AddArticle from './pages/manager/AddArticle'
 import SystemLogin from './pages/auth/SystemLogin'
-import { AuthProvider, useAuth } from './contexts/AuthProvider'
+import AuthProvider from './contexts/AuthProvider'
 import Authenticate from './pages/auth/Authenticate'
+import { useAuth } from './hooks/useAuth'
+
 
 
 function App() {
@@ -47,8 +49,8 @@ function App() {
             {/* Reader route */}
             <Route path="/" element={<Layout />} >
               <Route index element={<HomePage />} />
-              <Route path="/aaaa" element={<ArticlePage />} />
-              <Route path="/bbbb" element={<ListArticle />} />
+              <Route path="/detail/:articleSlug" element={<ArticlePage />} />
+              <Route path="/category/:categorySlug" element={<ListArticle />} />
             </Route>
 
             {/* Admin route */}

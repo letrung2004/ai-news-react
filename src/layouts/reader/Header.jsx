@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthProvider";
+import { useAuth } from "./../../hooks/useAuth";
+import usePublicArticles from "../../hooks/usePublicArticles";
+
 const Header = () => {
-    const [activeCategory, setActiveCategory] = useState('Trang chủ');
-    const categories = [
-        'Trang chủ', 'Tin mới', 'Giải trí', 'Kinh doanh',
-        'Du lịch', 'Đời sống', 'Pháp luật', 'Kinh tế', 'Công nghệ'
-    ];
+
+    const { categories, loading, error } = usePublicArticles();
+    console.log("danh muc: ", categories.result);
+    const [activeCategory, setActiveCategory] = useState(null);
+
+
     const [searchQuery, setSearchQuery] = useState('');
 
     const handleSearch = () => {
@@ -45,6 +48,13 @@ const Header = () => {
         };
     }, []);
 
+    useEffect(() => {
+        if (categories?.result?.length > 0) {
+            setActiveCategory(categories.result[0].name);
+        }
+    }, [categories]);
+
+
 
     return (
         <>
@@ -53,7 +63,7 @@ const Header = () => {
                 <div className="py-2 max-w-7xl mx-auto flex justify-between items-center text-sm">
                     <div className="flex items-center space-x-4">
                         <span>Việt Nam</span>
-                        <span>Thứ Bảy, 26/07/2025</span>
+                        <span>{new Date().toLocaleDateString("vi-VN", { weekday: 'long', year: 'numeric', month: '2-digit', day: '2-digit' })}</span>
                         <span>Về chúng tôi</span>
                         <span>Liên Hệ</span>
                     </div>
@@ -126,16 +136,16 @@ const Header = () => {
                     {/* Navigation */}
                     <nav className="flex justify-center mb-6">
                         <div className="flex space-x-8">
-                            {categories.map((category) => (
+                            {categories?.result?.slice(0, 9).map((category) => (
                                 <button
-                                    key={category}
-                                    onClick={() => setActiveCategory(category)}
-                                    className={`px-4 py-2 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap !rounded-button ${activeCategory === category
+                                    key={category.name}
+                                    onClick={() => setActiveCategory(category.name)}
+                                    className={`px-4 py-2 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap !rounded-button ${activeCategory === category.name
                                         ? 'text-green-600 border-b-2 border-green-600'
                                         : 'text-gray-700 hover:text-green-600'
                                         }`}
                                 >
-                                    {category}
+                                    {category.name}
                                 </button>
                             ))}
                         </div>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthProvider";
+import { useAuth } from "./useAuth";
 import { authService } from "../services/authService";
 import { buildOAuthUrl, handleApiError } from "../utils/helpers";
 import { oauth } from "../configs/oauth";
