@@ -9,7 +9,7 @@ const SystemLogin = () => {
     const {
         errors,
         loading,
-        loginUser,
+        loginUserSystem,
         handleUrlErrors,
         clearError
     } = useLogin();
@@ -35,7 +35,7 @@ const SystemLogin = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await loginUser(user);
+        await loginUserSystem(user);
     };
 
     useEffect(() => {

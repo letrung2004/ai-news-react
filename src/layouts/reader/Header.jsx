@@ -1,16 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "./../../hooks/useAuth";
-import usePublicArticles from "../../hooks/usePublicArticles";
+import { useCategory } from "../../hooks/useCategory";
 
 const Header = () => {
 
-    const { categories, loading, error } = usePublicArticles();
+    const { categories } = useCategory();
     console.log("danh muc: ", categories.result);
     const [activeCategory, setActiveCategory] = useState(null);
 
 
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery, setSearchQuery] = useState("");
 
     const handleSearch = () => {
         e.preventDefault();

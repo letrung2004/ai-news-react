@@ -1,6 +1,5 @@
-import { useState } from 'react'
 import './App.css'
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import HomePage from './pages/reader/HomePage'
 import Layout from './layouts/reader/Layout'
 import ArticlePage from './pages/reader/ArticlePage'
@@ -8,31 +7,21 @@ import ListArticle from './pages/reader/ListArticle'
 import AdminLayout from './layouts/manager/AdminLayout'
 import AdminHome from './pages/manager/AdminHome'
 import Login from './pages/auth/Login'
+import Unauthorized from './pages/auth/Unauthorized'
 import Register from './pages/auth/Register'
 import AddArticle from './pages/manager/AddArticle'
 import SystemLogin from './pages/auth/SystemLogin'
 import AuthProvider from './contexts/AuthProvider'
 import Authenticate from './pages/auth/Authenticate'
-import { useAuth } from './hooks/useAuth'
-
+import AddCategory from './pages/manager/AddCategory'
+import AddTag from './pages/manager/AddTag'
+import AllArticles from './pages/manager/AllArticles'
+import AdminRoute from './components/AdminRoute'
+import SuperAdminRoute from './components/SuperAdminRoute'
+import ErrorBoundary from './components/ErrorBoundary'
 
 
 function App() {
-  const PrivateRoute = ({ element }) => {
-    const { user, loading } = useAuth();
-    const location = useLocation();
-
-    if (loading) return <div>Loading...</div>;
-
-    if (!user) {
-      if (location.pathname.startsWith("/admin") || location.pathname.startsWith("/editor")) {
-        return <Navigate to="/login-system" replace />;
-      }
-      return <Navigate to="/login" replace />;
-    }
-
-    return element;
-  };
 
   return (
     <>
@@ -44,6 +33,7 @@ function App() {
             <Route path="/authenticate" element={<Authenticate />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login-system" element={<SystemLogin />} />
+            <Route path="/unauthorized" element={<Unauthorized />} />
 
 
             {/* Reader route */}
@@ -54,9 +44,17 @@ function App() {
             </Route>
 
             {/* Admin route */}
-            <Route path="/admin" element={<AdminLayout />} >
+            <Route path="/admin" element={<AdminRoute element={<AdminLayout />} />} >
               <Route index element={<AdminHome />} />
-              <Route path="/admin/add" element={<AddArticle />} />
+              <Route path="/admin/articles/new" element={
+                <ErrorBoundary>
+                  <AddArticle />
+                </ErrorBoundary>
+              } />
+              <Route path="/admin/categories" element={<AddCategory />} />
+              <Route path="/admin/tags" element={<AddTag />} />
+              <Route path="/admin/articles" element={<AllArticles />} />
+              <Route path="/admin/users" element={<SuperAdminRoute element={<AllArticles />} />} />
             </Route>
           </Routes>
         </BrowserRouter>

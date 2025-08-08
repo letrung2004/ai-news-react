@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { articleService } from '../services/articleService';
 
+// Sử dụng trong hook
+// const stats = readingTime(content); 
+// const timeToRead = stats.minutes; 
+
 export const useArticle = () => {
     const [addArticleForm, setAddArticleForm] = useState({
         title: '',
@@ -27,12 +31,12 @@ export const useArticle = () => {
             [field]: value,
         }));
 
-        if (field === 'content') {
-            setAddArticleForm((prev) => ({
-                ...prev,
-                readingTime: readingTime
-            }));
-        }
+        // if (field === 'content') {
+        //     setAddArticleForm((prev) => ({
+        //         ...prev,
+        //         readingTime: readingTime
+        //     }));
+        // }
     };
 
     // Toggle sections

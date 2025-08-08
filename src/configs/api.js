@@ -12,8 +12,18 @@ export const ENDPOINTS = {
         GET_ALL_ARTICLE: '/content/article/all',
         GET_DETAIL_ARTICLE: slug => `/content/article/detail-by-slug/${slug}`,
         GET_ALL_CATEGORIES: '/content/category',
+        CREATE_COMMENT: '/comment/create',
+        GET_COMMENTS: (articleId) => `/comment/article/${articleId}`,
+        GET_ALL_TAGS: '/content/tag',
     },
     ADMIN: {
-        // endpoints cho admin
+        CREATE_CATEGORY: '/content/category/create',
+        DELETE_CATEGORY: categoryId => `/content/category/delete/${categoryId}`,
+
+        CREATE_TAG: '/content/tag/create',
+        DELETE_TAG: tagId => `/content/tag/delete/${tagId}`,
+
+        CREATE_ARTICLE: '/content/article/create',
+        DELETE_ARTICLE: articleId => `/content/article/delete/${articleId}`,
     }
 };

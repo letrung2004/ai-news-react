@@ -55,7 +55,6 @@ const useLogin = () => {
 
             login(userResponse.result, token);
 
-
             navigate("/");
 
             return { success: true };
@@ -68,6 +67,49 @@ const useLogin = () => {
             setLoading(false);
         }
     };
+
+
+    const loginUserSystem = async (credentials) => {
+        const validationErrors = validate(credentials);
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return { success: false, errors: validationErrors };
+        }
+
+        setLoading(true);
+        setErrors({});
+        try {
+            console.log("in useLogin:", credentials.username);
+
+            const loginResponse = await authService.login(credentials);
+
+            const token = loginResponse.result?.token;
+            if (!token) {
+                throw new Error('Token không hợp lệ');
+            }
+
+            tokenStorage.saveToken(token);
+
+
+            const userResponse = await authService.getUserInfo();
+
+
+            login(userResponse.result, token);
+
+            navigate("/admin");
+
+            return { success: true };
+        } catch (error) {
+            console.error('Login error:', error);
+            const errorMessage = handleApiError(error);
+            setErrors({ general: errorMessage });
+            return { success: false, error: errorMessage };
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
 
 
     const loginWithGoogle = () => {
@@ -130,6 +172,7 @@ const useLogin = () => {
         errors,
         loading,
         loginUser,
+        loginUserSystem,
         loginWithGoogle,
         handleUrlErrors,
         clearError,

@@ -8,7 +8,14 @@ const HomePage = () => {
     console.log('Articles:', articles);
 
     if (error) {
-        return null;
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="text-center">
+                    <div className="text-red-500 text-6xl mb-4">⚠️</div>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Có lỗi xảy ra</h2>
+                </div>
+            </div>
+        );
     }
 
     const safeArticles = articles || [];

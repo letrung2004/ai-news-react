@@ -6,7 +6,7 @@ export const editorConfig = {
     toolbar: [
         'heading',
         '|',
-        'bold', 'italic', 'underline', 'strikethrough',
+        'bold', 'italic',
         '|',
         'link',
         '|',
@@ -20,7 +20,6 @@ export const editorConfig = {
         '|',
         'undo', 'redo',
         '|',
-        'sourceEditing'
     ],
 
     heading: {
@@ -33,12 +32,12 @@ export const editorConfig = {
         ]
     },
 
-  
+
     image: {
         toolbar: [
             'imageStyle:inline',
             'imageStyle:alignLeft',
-            'imageStyle:alignCenter', 
+            'imageStyle:alignCenter',
             'imageStyle:alignRight',
             '|',
             'imageStyle:side',
@@ -99,25 +98,5 @@ export const editorConfig = {
 
     placeholder: 'Viết nội dung bài báo của bạn...',
 
-    
 };
 
-
-// helper để lấy danh sách người dùng cho mention
-// export const getUserMentions = (queryText) => {
-//     return new Promise(resolve => {
-//         setTimeout(() => {
-//             const users = [
-//                 { id: '@admin', name: 'Admin', avatar: '/avatars/admin.jpg' },
-//                 { id: '@editor', name: 'Editor', avatar: '/avatars/editor.jpg' },
-//                 // ... more users
-//             ];
-            
-//             const filteredUsers = users.filter(user => 
-//                 user.name.toLowerCase().includes(queryText.toLowerCase())
-//             );
-            
-//             resolve(filteredUsers);
-//         }, 100);
-//     });
-// };

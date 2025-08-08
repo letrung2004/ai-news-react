@@ -88,7 +88,7 @@ const AddArticle = () => {
                                     Nội dung bài viết
                                 </label>
 
-                                <div className="border border-gray-200 rounded-lg overflow-hidden min-h-[650px]">
+                                <div className="border border-gray-200 rounded-lg overflow-hidden min-h-[650px] ckeditor-content">
                                     <CKEditor
                                         editor={ClassicEditor}
                                         config={editorConfig}
