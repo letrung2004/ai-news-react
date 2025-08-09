@@ -25,17 +25,27 @@ export const useTag = () => {
 
     const createTag = async (tagData) => {
         if (tagData.name.trim() === "") {
-            setError("Tên thẻ không được để trống");
-            return;
+            const errorMessage = "Tên thẻ không được để trống";
+            setError(errorMessage);
+            return { success: false, message: errorMessage };
         }
         try {
             setIsLoading(true);
+            setError(null);
+
             const response = await categoryAndTagService.createTag(tagData);
             await loadTags();
-            setError(null);
+
+            return {
+                success: true,
+                message: "Thẻ đã được thêm thành công!",
+                data: response
+            };
         } catch (err) {
             console.error('Error creating tag:', err);
-            setError(err.message || 'Có lỗi xảy ra khi tạo thẻ');
+            const errorMessage = err.message || 'Có lỗi xảy ra khi tạo thẻ';
+            setError(errorMessage);
+            return { success: false, message: errorMessage };
         } finally {
             setIsLoading(false);
         }
@@ -44,12 +54,20 @@ export const useTag = () => {
     const deleteTag = async (tagId) => {
         try {
             setIsLoading(true);
+            setError(null);
+
             await categoryAndTagService.deleteTag(tagId);
             await loadTags();
-            setError(null);
+
+            return {
+                success: true,
+                message: "Thẻ đã được xóa thành công!"
+            };
         } catch (err) {
             console.error('Error deleting tag:', err);
-            setError(err.message || 'Có lỗi xảy ra khi xóa thẻ');
+            const errorMessage = err.message || 'Có lỗi xảy ra khi xóa thẻ';
+            setError(errorMessage);
+            return { success: false, message: errorMessage };
         } finally {
             setIsLoading(false);
         }
@@ -64,6 +82,7 @@ export const useTag = () => {
         isLoading,
         error,
         loadTags,
-        createTag
+        createTag,
+        deleteTag
     };
 }

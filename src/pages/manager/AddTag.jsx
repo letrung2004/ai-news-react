@@ -1,18 +1,17 @@
 import React, { useState } from "react";
-import {
-    Save,
-    FileCheck,
-    Hash,
-    Plus,
-    Edit,
-    Trash2,
-    Search,
-    Tag
-} from "lucide-react";
+import { Save, FileCheck, Hash, Plus, Edit, Trash2, Search, Tag } from "lucide-react";
 import { useTag } from "../../hooks/useTag";
+import SimpleLoading from "../../components/SimpleLoading";
+import { Error } from "../../components/Error";
+import useAlert from "../../hooks/useAlert";
+import useConfirmDialog from "../../hooks/useConfirmDialog";
+import Alert from "../../components/Alert";
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 const AddTag = () => {
-    const { tags, isLoading, error, loadTags, createTag, deleteTag } = useTag();
+    const { tags, isLoading, error, createTag, deleteTag } = useTag();
+    const { alert, showSuccess, showError, hideAlert } = useAlert();
+    const { confirmDialog, showDeleteConfirm, handleConfirm, handleCancel } = useConfirmDialog();
     console.log("Tags:", tags.result);
 
     const [tagForm, setTagForm] = useState({
@@ -23,7 +22,6 @@ const AddTag = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
 
-
     const handleFormChange = (field, value) => {
         setTagForm(prev => ({
             ...prev,
@@ -31,38 +29,47 @@ const AddTag = () => {
         }));
     };
 
-    const handleSubmit = () => {
-        try {
-            setIsSubmitting(true);
-            createTag(tagForm);
+    const handleSubmit = async () => {
+        setIsSubmitting(true);
+        const result = await createTag(tagForm);
+
+        if (result.success) {
             setTagForm({ name: '', description: '' });
-        } catch (error) {
-            console.error('Error submitting tag:', error);
-        } finally {
-            setIsSubmitting(false);
+            showSuccess('Thành công', result.message);
+        } else {
+            showError('Lỗi', result.message);
         }
 
-
+        setIsSubmitting(false);
     };
 
-    const handleDelete = (id) => {
-        if (window.confirm('Bạn có chắc chắn muốn xóa thẻ này?')) {
-            deleteTag(id);
-        }
+    const handleDelete = (tag) => {
+        showDeleteConfirm(
+            tag.name,
+            async () => {
+                const result = await deleteTag(tag.id);
+
+                if (result.success) {
+                    showSuccess('Thành công', result.message);
+                } else {
+                    showError('Lỗi', result.message);
+                }
+            }
+        );
     };
 
     const tagList = tags?.result || [];
 
     const filteredTags = tagList.filter(tag =>
-        tag.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        tag.description.toLowerCase().includes(searchTerm.toLowerCase())
+        tag.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tag.description?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const getTagColor = (index) => {
         const colors = [
             'bg-green-100 text-green-800',
-            'bg-green-100 text-green-800',
-            'bg-green-100 text-green-800',
+            'bg-blue-100 text-blue-800',
+            'bg-purple-100 text-purple-800',
             'bg-yellow-100 text-yellow-800',
             'bg-pink-100 text-pink-800',
             'bg-indigo-100 text-indigo-800',
@@ -72,6 +79,11 @@ const AddTag = () => {
         return colors[index % colors.length];
     };
 
+    if (isLoading) {
+        return <SimpleLoading />;
+    }
+
+    if (error) return <Error message={error} onRetry={() => window.location.reload()} />;
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
@@ -169,7 +181,7 @@ const AddTag = () => {
                                                             {tag.name}
                                                         </span>
                                                         <span className="text-xs text-gray-500">
-                                                            {tag.count} bài viết
+                                                            {tag.count || 0} bài viết
                                                         </span>
                                                     </div>
                                                     <div className="flex items-center space-x-1">
@@ -177,7 +189,7 @@ const AddTag = () => {
                                                             <Edit className="w-3 h-3" />
                                                         </button>
                                                         <button
-                                                            onClick={() => handleDelete(tag.id)}
+                                                            onClick={() => handleDelete(tag)}
                                                             className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                                                         >
                                                             <Trash2 className="w-3 h-3" />
@@ -203,6 +215,27 @@ const AddTag = () => {
                     </div>
                 </div>
             </div>
+
+            <Alert
+                type={alert.type}
+                title={alert.title}
+                message={alert.message}
+                isVisible={alert.isVisible}
+                onClose={hideAlert}
+                autoClose={true}
+                duration={3000}
+            />
+
+            <ConfirmDialog
+                isVisible={confirmDialog.isVisible}
+                title={confirmDialog.title}
+                message={confirmDialog.message}
+                confirmText={confirmDialog.confirmText}
+                cancelText={confirmDialog.cancelText}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+                type={confirmDialog.type}
+            />
         </div>
     );
 };

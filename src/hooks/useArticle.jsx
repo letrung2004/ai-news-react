@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react';
 import { articleService } from '../services/articleService';
 
-// Sử dụng trong hook
-// const stats = readingTime(content); 
-// const timeToRead = stats.minutes; 
 
-export const useArticle = () => {
+export const useArticle = (showSuccess, showError) => {
     const [addArticleForm, setAddArticleForm] = useState({
         title: '',
         content: '',
@@ -21,25 +18,14 @@ export const useArticle = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedTags, setSelectedTags] = useState([]);
 
-    const categories = ['Công nghệ', 'Thể thao', 'Văn hóa', 'Kinh tế', 'Giải trí', 'Sức khỏe', 'Du lịch', 'Ẩm thực'];
-    const articleTag = ['Công nghệ', 'Thể thao', 'Văn hóa', 'Kinh tế', 'Giải trí', 'Sức khỏe', 'Du lịch', 'Ẩm thực'];
-
-    // Xử lý thay đổi form
     const handleAddArticleFormChange = (field, value) => {
         setAddArticleForm((prev) => ({
             ...prev,
             [field]: value,
         }));
-
-        // if (field === 'content') {
-        //     setAddArticleForm((prev) => ({
-        //         ...prev,
-        //         readingTime: readingTime
-        //     }));
-        // }
     };
 
-    // Toggle sections
+
     const toggleSection = (sectionId) => {
         setCollapsedSections(prev => ({
             ...prev,
@@ -47,7 +33,6 @@ export const useArticle = () => {
         }));
     };
 
-    // Xử lý danh mục
     const handleCategoryChange = (clickedCategory) => {
         if (addArticleForm.category === clickedCategory) {
             setAddArticleForm({ ...addArticleForm, category: '' });
@@ -56,7 +41,6 @@ export const useArticle = () => {
         }
     };
 
-    // Xử lý tags
     const handleTagsChange = (tag) => {
         setSelectedTags(prev => {
             if (prev.includes(tag)) {
@@ -67,7 +51,6 @@ export const useArticle = () => {
         });
     };
 
-    // Xử lý authors
     const addAuthors = () => {
         if (newAuthor.trim() && !addArticleForm.authors.includes(newAuthor.trim())) {
             handleAddArticleFormChange('authors', [...addArticleForm.authors, newAuthor.trim()]);
@@ -79,7 +62,6 @@ export const useArticle = () => {
         handleAddArticleFormChange('authors', addArticleForm.authors.filter(author => author !== authorRemove));
     };
 
-    // Xử lý upload ảnh
     const handleImageUpload = (file) => {
         if (file && file.type.startsWith('image/')) {
             handleAddArticleFormChange('featuredImage', file);
@@ -97,14 +79,10 @@ export const useArticle = () => {
         setImagePreview(null);
     };
 
-    // Xử lý submit
+
     const handleSubmit = async (isDraft = false) => {
         setIsSubmitting(true);
-
         try {
-            console.log('=== STARTING SUBMIT PROCESS ===');
-
-            // upload ảnh đại diện nếu có
             let featuredImageUrl = null;
             if (addArticleForm.featuredImage) {
                 const imageFormData = new FormData();
@@ -114,30 +92,45 @@ export const useArticle = () => {
                 featuredImageUrl = uploadResult.result.urlImage;
             }
 
-            //  object dữ liệu để gửi
             const articleData = {
                 title: addArticleForm.title,
                 content: addArticleForm.content,
                 category: addArticleForm.category,
-                tags: addArticleForm.tags,
+                tags: selectedTags,
                 featuredImage: featuredImageUrl,
                 authors: addArticleForm.authors
             };
 
-            console.log('=== FINAL ARTICLE DATA ===');
-            console.log(JSON.stringify(articleData, null, 2));
-            console.log('===========================');
 
-            // 4. Gọi API tạo bài viết
-            // const result = await articleService.createArticle(articleData);
 
-            // alert(isDraft ? 'Lưu nháp thành công!' : 'Xuất bản bài viết thành công!');
+            const result = await articleService.createArticle(articleData);
 
-            console.log('Submit completed successfully');
+            // console.log('=========check data========');
+            // console.log(JSON.stringify(articleData, null, 2));
+            // console.log('===========================');
+
+            console.log('Article submitted successfully:', result);
+
+            setAddArticleForm({
+                title: '',
+                content: '',
+                category: '',
+                featuredImage: null,
+                authors: []
+            });
+            setSelectedTags([]);
+            setImagePreview(null);
+
+            showSuccess('Xuất bản thành công!', 'Bài viết đã được xuất bản thành công.');
+            return result;
+
 
         } catch (error) {
             console.error('Error submitting article:', error);
-            alert('Có lỗi xảy ra khi ' + (isDraft ? 'lưu nháp' : 'xuất bản') + ' bài viết!');
+            showError(
+                'Có lỗi xảy ra!',
+                `Không thể ${isDraft ? 'lưu nháp' : 'xuất bản'} bài viết. Vui lòng thử lại.`
+            );
         } finally {
             setIsSubmitting(false);
         }
@@ -146,7 +139,6 @@ export const useArticle = () => {
 
     useEffect(() => {
         return () => {
-            // Cleanup preview URL
             if (imagePreview && imagePreview.startsWith('blob:')) {
                 URL.revokeObjectURL(imagePreview);
             }
@@ -161,7 +153,7 @@ export const useArticle = () => {
         newAuthor, setNewAuthor,
         imagePreview,
         isSubmitting,
-        categories, articleTag,
+
 
         // Methods
         handleAddArticleFormChange,

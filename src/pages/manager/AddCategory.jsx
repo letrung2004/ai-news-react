@@ -1,23 +1,17 @@
 import React, { useEffect, useState } from "react";
-import {
-    Save,
-    FileCheck,
-    FileText,
-    Plus,
-    Edit,
-    Trash2,
-    Search
-} from "lucide-react";
+import { Save, FileCheck, FileText, Plus, Edit, Trash2, Search } from "lucide-react";
 import { useCategory } from "../../hooks/useCategory";
+import Alert from "./../../components/Alert";
+import ConfirmDialog from "./../../components/ConfirmDialog";
+import SimpleLoading from "../../components/SimpleLoading";
+import { Error } from "../../components/Error";
+import useAlert from "../../hooks/useAlert";
+import useConfirmDialog from "../../hooks/useConfirmDialog";
 
 const AddCategory = () => {
-    const {
-        categories,
-        isLoading,
-        error,
-        createCategory,
-        deleteCategory
-    } = useCategory();
+    const { categories, isLoading, error, createCategory, deleteCategory } = useCategory();
+    const { alert, showSuccess, showError, hideAlert } = useAlert();
+    const { confirmDialog, showDeleteConfirm, handleConfirm, handleCancel } = useConfirmDialog();
 
     console.log("danh muc ở add category: ", categories);
 
@@ -37,26 +31,33 @@ const AddCategory = () => {
     };
 
     const handleSubmit = async () => {
-        try {
-            setIsSubmitting(true);
-            await createCategory(categoryForm);
+        setIsSubmitting(true);
+
+        const result = await createCategory(categoryForm);
+
+        if (result.success) {
             setCategoryForm({ name: '', description: '' });
-        } catch (err) {
-            console.error('Error creating category:', err);
-        } finally {
-            setIsSubmitting(false);
+            showSuccess('Thành công', result.message);
+        } else {
+            showError('Lỗi', result.message);
         }
 
+        setIsSubmitting(false);
     };
 
-    const handleDelete = async (categoryId) => {
-        if (window.confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
-            try {
-                await deleteCategory(categoryId);
-            } catch (error) {
-                console.error('Error deleting category:', error);
+    const handleDeleteClick = (category) => {
+        showDeleteConfirm(
+            category.name,
+            async () => {
+                const result = await deleteCategory(category.id);
+
+                if (result.success) {
+                    showSuccess('Thành công', result.message);
+                } else {
+                    showError('Lỗi', result.message);
+                }
             }
-        }
+        );
     };
 
     const categoryList = categories?.result || [];
@@ -67,31 +68,10 @@ const AddCategory = () => {
     );
 
     if (isLoading) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Đang tải danh mục...</p>
-                </div>
-            </div>
-        );
+        return <SimpleLoading />;
     }
 
-    if (error) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6 flex items-center justify-center">
-                <div className="text-center">
-                    <p className="text-red-600 mb-4">Lỗi: {error}</p>
-                    <button
-                        onClick={() => window.location.reload()}
-                        className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                    >
-                        Tải lại
-                    </button>
-                </div>
-            </div>
-        );
-    }
+    if (error) return <Error message={error} onRetry={() => window.location.reload()} />;
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
@@ -198,7 +178,7 @@ const AddCategory = () => {
                                                         <Edit className="w-4 h-4" />
                                                     </button>
                                                     <button
-                                                        onClick={() => handleDelete(category.id)}
+                                                        onClick={() => handleDeleteClick(category)}
                                                         className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                                     >
                                                         <Trash2 className="w-4 h-4" />
@@ -220,6 +200,27 @@ const AddCategory = () => {
                     </div>
                 </div>
             </div>
+
+            <Alert
+                type={alert.type}
+                title={alert.title}
+                message={alert.message}
+                isVisible={alert.isVisible}
+                onClose={hideAlert}
+                autoClose={true}
+                duration={3000}
+            />
+
+            <ConfirmDialog
+                isVisible={confirmDialog.isVisible}
+                title={confirmDialog.title}
+                message={confirmDialog.message}
+                confirmText={confirmDialog.confirmText}
+                cancelText={confirmDialog.cancelText}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+                type={confirmDialog.type}
+            />
         </div>
     );
 };

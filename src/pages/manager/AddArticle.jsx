@@ -4,8 +4,13 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { editorConfig } from '../../configs/editorConfig';
 import { useArticle } from "../../hooks/useArticle";
+import { useCategory } from "../../hooks/useCategory";
+import { useTag } from "../../hooks/useTag";
+import Alert from "../../components/Alert";
+import useAlert from "../../hooks/useAlert";
 
 const AddArticle = () => {
+    const { alert, hideAlert, showSuccess, showError } = useAlert();
     const {
         // States
         addArticleForm,
@@ -14,7 +19,6 @@ const AddArticle = () => {
         newAuthor, setNewAuthor,
         imagePreview,
         isSubmitting,
-        categories, articleTag,
 
         // Methods
         handleAddArticleFormChange,
@@ -26,7 +30,12 @@ const AddArticle = () => {
         handleImageUpload,
         removeImage,
         handleSubmit
-    } = useArticle();
+    } = useArticle(showSuccess, showError);
+
+    const { categories } = useCategory();
+    const { tags } = useTag();
+
+
 
 
     return (
@@ -238,15 +247,15 @@ const AddArticle = () => {
                             {!collapsedSections['categories'] && (
                                 <div className="p-4 space-y-3">
                                     <div className="max-h-32 overflow-y-auto space-y-2">
-                                        {categories.map((category, index) => (
+                                        {categories?.result?.map((category, index) => (
                                             <label key={index} className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded-lg">
                                                 <input
                                                     type="radio"
-                                                    checked={addArticleForm.category === category}
-                                                    onChange={() => handleCategoryChange(category)}
+                                                    checked={addArticleForm.category === category.id}
+                                                    onChange={() => handleCategoryChange(category.id)}
                                                     className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                                                 />
-                                                <span className="text-sm text-gray-700">{category}</span>
+                                                <span className="text-sm text-gray-700">{category.name}</span>
                                             </label>
                                         ))}
                                     </div>
@@ -270,15 +279,15 @@ const AddArticle = () => {
                             {!collapsedSections['tags'] && (
                                 <div className="p-4 space-y-3">
                                     <div className="max-h-32 overflow-y-auto space-y-2">
-                                        {articleTag.map((tag, index) => (
+                                        {tags?.result?.map((tag, index) => (
                                             <label key={index} className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded-lg">
                                                 <input
                                                     type="checkbox"
-                                                    checked={selectedTags.includes(tag)}
-                                                    onChange={() => handleTagsChange(tag)}
+                                                    checked={selectedTags.includes(tag.id)}
+                                                    onChange={() => handleTagsChange(tag.id)}
                                                     className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                                                 />
-                                                <span className="text-sm text-gray-700">{tag}</span>
+                                                <span className="text-sm text-gray-700">{tag.name}</span>
                                             </label>
                                         ))}
                                     </div>
@@ -290,6 +299,15 @@ const AddArticle = () => {
                     </div>
                 </div>
             </div>
+            <Alert
+                type={alert.type}
+                title={alert.title}
+                message={alert.message}
+                isVisible={alert.isVisible}
+                onClose={hideAlert}
+                autoClose={true}
+                duration={3000}
+            />
         </div>
     );
 };

@@ -15,6 +15,7 @@ export const ENDPOINTS = {
         CREATE_COMMENT: '/comment/create',
         GET_COMMENTS: (articleId) => `/comment/article/${articleId}`,
         GET_ALL_TAGS: '/content/tag',
+        GET_ALL_ARTICLE_BY_CATEGORY: (categorySlug) => `/content/article/all/${categorySlug}`,
     },
     ADMIN: {
         CREATE_CATEGORY: '/content/category/create',
@@ -25,5 +26,6 @@ export const ENDPOINTS = {
 
         CREATE_ARTICLE: '/content/article/create',
         DELETE_ARTICLE: articleId => `/content/article/delete/${articleId}`,
+
     }
 };

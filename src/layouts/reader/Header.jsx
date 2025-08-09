@@ -4,19 +4,16 @@ import { useAuth } from "./../../hooks/useAuth";
 import { useCategory } from "../../hooks/useCategory";
 
 const Header = () => {
-
     const { categories } = useCategory();
     console.log("danh muc: ", categories.result);
     const [activeCategory, setActiveCategory] = useState(null);
-
-
     const [searchQuery, setSearchQuery] = useState("");
+    const [isScrolled, setIsScrolled] = useState(false);
 
-    const handleSearch = () => {
+    const handleSearch = (e) => {
         e.preventDefault();
         console.log('Searching for:', searchQuery);
     };
-
 
     const { user, logout } = useAuth();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -34,7 +31,17 @@ const Header = () => {
         setIsDropdownOpen(!isDropdownOpen);
     };
 
-    // Đóng dropdown khi click ra ngoài
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollTop = window.scrollY;
+            setIsScrolled(scrollTop > 100);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -54,12 +61,11 @@ const Header = () => {
         }
     }, [categories]);
 
-
-
     return (
         <>
-            {/* Top Header */}
-            <div className="bg-gray-900 text-white px-6 py-2">
+
+            <div className={`bg-gray-900 text-white px-6 py-2 transition-all duration-300 ${isScrolled ? 'transform -translate-y-full opacity-0' : 'transform translate-y-0 opacity-100'
+                }`}>
                 <div className="py-2 max-w-7xl mx-auto flex justify-between items-center text-sm">
                     <div className="flex items-center space-x-4">
                         <span>Việt Nam</span>
@@ -118,61 +124,68 @@ const Header = () => {
                             </>
                         )}
                     </div>
-
-
                 </div>
             </div>
-            {/* Main Header */}
-            <header className="bg-white shadow-sm">
-                <div className="max-w-7xl mx-auto px-6 py-6">
-                    <div className="text-center mb-8">
-                        <h1
-                            className="text-5xl font-bold cursor-pointer"
-                        >
-                            <span className="text-green-500">MAG</span>
-                            <span className="text-gray-800">NEWS</span>
-                        </h1>
-                    </div>
-                    {/* Navigation */}
-                    <nav className="flex justify-center mb-6">
-                        <div className="flex space-x-8">
-                            {categories?.result?.slice(0, 9).map((category) => (
-                                <button
+
+
+            <header className={`bg-white shadow-sm transition-all duration-300 ${isScrolled
+                ? 'fixed top-0 left-0 right-0 z-40 shadow-lg'
+                : 'relative'
+                }`}>
+                <div className="max-w-7xl mx-auto px-6">
+                    {/* Logo - ẩn khi scroll */}
+                    {!isScrolled && (
+                        <div className="text-center py-6 mb-8">
+                            <Link to="/">
+                                <h1 className="text-5xl font-bold cursor-pointer">
+                                    <span className="text-green-500">MAG</span>
+                                    <span className="text-gray-800">NEWS</span>
+                                </h1>
+                            </Link>
+                        </div>
+                    )}
+
+
+                    <nav className={`transition-all duration-300 ${isScrolled
+                        ? 'flex items-center justify-start py-3 space-x-8'
+                        : 'flex justify-center mb-6'
+                        }`}>
+                        {/* Logo nhỏ khi scroll - nằm cùng hàng với menu */}
+                        {isScrolled && (
+                            <Link to="/" className="flex-shrink-0">
+                                <h1 className="text-2xl font-bold cursor-pointer">
+                                    <span className="text-green-500">MAG</span>
+                                    <span className="text-gray-800">NEWS</span>
+                                </h1>
+                            </Link>
+                        )}
+
+                        {/* Categories */}
+                        <div className="flex space-x-8 overflow-x-auto no-scrollbar">
+                            {categories?.result?.map((category) => (
+                                <Link
                                     key={category.name}
+                                    to={`/category/${category.slug}`}
+                                    state={{ categorySlug: category.slug }}
                                     onClick={() => setActiveCategory(category.name)}
-                                    className={`px-4 py-2 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap !rounded-button ${activeCategory === category.name
+                                    className={`px-4 py-2 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${activeCategory === category.name
                                         ? 'text-green-600 border-b-2 border-green-600'
                                         : 'text-gray-700 hover:text-green-600'
                                         }`}
                                 >
                                     {category.name}
-                                </button>
+                                </Link>
                             ))}
                         </div>
+
                     </nav>
-                    {/* Search Bar */}
-                    <div className="max-w-md mx-auto">
-                        <form onSubmit={handleSearch} className="relative">
-                            <input
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Tìm kiếm"
-                                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
-                            />
-                            <button
-                                type="submit"
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 cursor-pointer"
-                            >
-                                <i className="fas fa-search text-sm"></i>
-                            </button>
-                        </form>
-                    </div>
                 </div>
             </header>
+
+
+            {isScrolled && <div className="h-16"></div>}
         </>
     );
-
 };
 
 export default Header;

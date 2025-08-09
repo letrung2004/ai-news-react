@@ -2,21 +2,13 @@ import React, { useState } from 'react';
 import usePublicArticles from '../../hooks/usePublicArticles';
 import SimpleLoading from '../../components/SimpleLoading';
 import { Link } from 'react-router-dom';
+import { Error } from '../../components/Error';
 
 const HomePage = () => {
     const { articles, loading, error } = usePublicArticles();
     console.log('Articles:', articles);
 
-    if (error) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                    <div className="text-red-500 text-6xl mb-4">⚠️</div>
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Có lỗi xảy ra</h2>
-                </div>
-            </div>
-        );
-    }
+    if (error) return <Error message={error} onRetry={() => window.location.reload()} />;
 
     const safeArticles = articles || [];
     const featuredArticle = safeArticles[0];
@@ -69,7 +61,7 @@ const HomePage = () => {
                                             <div className="flex items-center text-sm text-gray-300">
                                                 <span>{featuredArticle.authors?.length > 0 ? featuredArticle.authors.join(', ') : 'Admin'}</span>
                                                 <span className="mx-2">•</span>
-                                                <span>{new Date(featuredArticle.publishDate).toLocaleDateString('vi-VN', { timeZone: 'UTC' })}</span>
+                                                <span>{featuredArticle.created}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -150,7 +142,7 @@ const HomePage = () => {
                                             </p> */}
                                                 <div className="flex items-center justify-between text-xs text-gray-500">
                                                     <span>{article.authors?.[0] || 'Admin'}</span>
-                                                    <span>{new Date(article.publishDate).toLocaleDateString('vi-VN')}</span>
+                                                    <span>{article.created}</span>
                                                 </div>
                                             </div>
                                         </article>

@@ -11,6 +11,10 @@ export const articleService = {
     },
 
     //add article
+    createArticle: async (articleData) => {
+        const response = await AUTH_REQUEST.post(ENDPOINTS.ADMIN.CREATE_ARTICLE, articleData);
+        return response.data;
+    },
 
     //update article
 
@@ -25,6 +29,12 @@ export const articleService = {
     //get all article
     getAllArticle: async () => {
         const response = await API.get(ENDPOINTS.NEWS.GET_ALL_ARTICLE);
+        return response.data.result.data;
+    },
+
+    //get all article by category
+    getAllArticleByCategory: async (categorySlug) => {
+        const response = await API.get(ENDPOINTS.NEWS.GET_ALL_ARTICLE_BY_CATEGORY(categorySlug));
         return response.data.result.data;
     },
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { articleService } from "../services/articleService";
 
-const usePublicArticles = () => {
+const usePublicArticles = (categorySlug) => {
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -41,10 +41,30 @@ const usePublicArticles = () => {
         }
     };
 
+    const loadArticlesByCategory = async (categorySlug) => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await articleService.getAllArticleByCategory(categorySlug);
+            setArticles(response);
+
+        } catch (err) {
+            console.error('Error loading articles by category:', err);
+            setError(err.message || 'Có lỗi xảy ra khi tải bài viết');
+            setArticles([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        loadArticles();
-    }, []);
+        if (categorySlug) {
+            loadArticlesByCategory(categorySlug);
+        } else {
+            loadArticles();
+        }
+    }, [categorySlug]);
+
 
     return {
         articles,
@@ -54,7 +74,7 @@ const usePublicArticles = () => {
         detailArticle,
         setDetailArticle,
         loadDetailArticles,
-
+        loadArticlesByCategory
     };
 };
 
