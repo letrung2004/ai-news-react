@@ -38,4 +38,17 @@ export const articleService = {
         return response.data.result.data;
     },
 
+    // get all article comment
+    getAllCommentByArticle: async (articleId) => {
+        const response = await API.get(ENDPOINTS.NEWS.GET_COMMENTS(articleId));
+        return response.data;
+    },
+
+    //create comment
+    createCommentArticle: async (commentData) => {
+        const response = await AUTH_REQUEST.post(ENDPOINTS.NEWS.CREATE_COMMENT, commentData);
+        return response.data;
+    }
+
+
 };

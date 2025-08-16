@@ -3,6 +3,7 @@ import { articleService } from "../services/articleService";
 
 const usePublicArticles = (categorySlug) => {
     const [articles, setArticles] = useState([]);
+    const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [detailArticle, setDetailArticle] = useState(null);
@@ -30,6 +31,7 @@ const usePublicArticles = (categorySlug) => {
 
             const response = await articleService.getDetailArticle(slug);
             setDetailArticle(response);
+            loadCommentArticle(response.result.id);
 
 
         } catch (err) {
@@ -57,6 +59,42 @@ const usePublicArticles = (categorySlug) => {
         }
     };
 
+    const loadCommentArticle = async (articleId) => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await articleService.getAllCommentByArticle(articleId);
+            setComments(response);
+
+        } catch (err) {
+            console.error('Error loading articles comments:', err);
+            setError(err.message || 'Có lỗi xảy ra khi tải bình luận bài viết');
+            setComments([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleCreateComment = async (commentData) => {
+        if (!commentData.content || !commentData.articleId) {
+            console.error("Bình luận không hợp lệ");
+            return;
+        }
+
+        try {
+            setLoading(true);
+            setError(null);
+            await articleService.createCommentArticle(commentData);
+            const response = await articleService.getAllCommentByArticle(commentData.articleId);
+            setComments(response);
+        } catch (err) {
+            console.error('Error submitting comment:', err);
+            setError(err.message || 'Có lỗi xảy ra khi gửi bình luận');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         if (categorySlug) {
             loadArticlesByCategory(categorySlug);
@@ -67,14 +105,16 @@ const usePublicArticles = (categorySlug) => {
 
 
     return {
-        articles,
+        articles, comments,
         loading,
         error,
         refetchArticles: loadArticles,
         detailArticle,
         setDetailArticle,
         loadDetailArticles,
-        loadArticlesByCategory
+        loadArticlesByCategory,
+        loadCommentArticle,
+        setComments, handleCreateComment
     };
 };
 

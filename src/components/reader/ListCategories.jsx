@@ -1,5 +1,6 @@
 import React from 'react';
-import { useCategory } from '../hooks/useCategory';
+import { useCategory } from '../../hooks/useCategory';
+
 
 const ListCategories = () => {
 

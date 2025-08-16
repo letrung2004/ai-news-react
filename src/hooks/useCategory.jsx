@@ -78,6 +78,7 @@ export const useCategory = () => {
     };
 
     useEffect(() => {
+        console.log("useCategory mounted");
         loadCategories();
     }, []);
 

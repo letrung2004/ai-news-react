@@ -265,24 +265,7 @@ const AdminHome = () => {
                             })}
                         </div>
 
-                        {/* Activity Summary */}
-                        <div className="mt-6 pt-6 border-t border-gray-200">
-                            <h4 className="font-medium text-gray-900 mb-3">Hoạt động gần đây</h4>
-                            <div className="space-y-3">
-                                <div className="flex items-center space-x-3 text-sm">
-                                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                    <span className="text-gray-600">3 bài viết mới được xuất bản</span>
-                                </div>
-                                <div className="flex items-center space-x-3 text-sm">
-                                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                    <span className="text-gray-600">12 bình luận chờ duyệt</span>
-                                </div>
-                                <div className="flex items-center space-x-3 text-sm">
-                                    <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                                    <span className="text-gray-600">5 người dùng mới đăng ký</span>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
 

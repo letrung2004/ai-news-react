@@ -19,14 +19,14 @@ const AdminSidebar = () => {
         },
         {
             id: 'articles',
-            label: 'Quản lý bài viết',
+            label: 'Quản lý nội dung',
             icon: FileText,
             hasSubmenu: true,
             requiredRoles: ['ADMIN', 'EDITOR'],
             submenu: [
                 {
                     id: 'all-articles',
-                    label: 'Tất cả bài viết',
+                    label: 'Tất cả bài báo',
                     icon: List,
                     path: '/admin/articles',
                     requiredRoles: ['ADMIN', 'EDITOR']
@@ -40,14 +40,14 @@ const AdminSidebar = () => {
                 },
                 {
                     id: 'article-categories',
-                    label: 'Danh mục bài viết',
+                    label: 'Danh mục bài báo',
                     icon: Folder,
                     path: '/admin/categories',
                     requiredRoles: ['ADMIN', 'EDITOR']
                 },
                 {
                     id: 'tags',
-                    label: 'Thẻ bài viết',
+                    label: 'Thẻ bài báo',
                     icon: Tag,
                     path: '/admin/tags',
                     requiredRoles: ['ADMIN', 'EDITOR']

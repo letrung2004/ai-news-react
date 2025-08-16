@@ -27,5 +27,9 @@ export const ENDPOINTS = {
         CREATE_ARTICLE: '/content/article/create',
         DELETE_ARTICLE: articleId => `/content/article/delete/${articleId}`,
 
+        APPROVE_COMMENT: commentId => `/content/comment/approve/${commentId}`,
+        DELETE_COMMENT: commentId => `/content/comment/delete/${commentId}`,
+        REJECT_COMMENT: commentId => `/content/comment/reject/${commentId}`,
+
     }
 };

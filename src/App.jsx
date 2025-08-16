@@ -19,6 +19,9 @@ import AllArticles from './pages/manager/AllArticles'
 import AdminRoute from './components/AdminRoute'
 import SuperAdminRoute from './components/SuperAdminRoute'
 import ErrorBoundary from './components/ErrorBoundary'
+import UserManagement from './pages/manager/UserManagement'
+import CommentManagement from './pages/manager/CommentManagement'
+import SystemSettings from './pages/manager/SystemSettings'
 
 
 function App() {
@@ -54,7 +57,9 @@ function App() {
               <Route path="/admin/categories" element={<AddCategory />} />
               <Route path="/admin/tags" element={<AddTag />} />
               <Route path="/admin/articles" element={<AllArticles />} />
-              <Route path="/admin/users" element={<SuperAdminRoute element={<AllArticles />} />} />
+              <Route path="/admin/users" element={<SuperAdminRoute element={<UserManagement />} />} />
+              <Route path="/admin/settings" element={<SuperAdminRoute element={<SystemSettings />} />} />
+              <Route path="/admin/comments" element={<CommentManagement />} />
             </Route>
           </Routes>
         </BrowserRouter>
