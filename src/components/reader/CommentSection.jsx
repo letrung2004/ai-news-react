@@ -1,15 +1,22 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 
 const CommentSection = ({ articleId, comments, onSubmitComment }) => {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const [commentContent, setCommentContent] = useState("");
+
+    const handleLoginRedirect = () => {
+        navigate("/login", {
+            state: { from: location.pathname }
+        });
+    };
 
     const handleSubmitComment = () => {
         if (!user) {
-            navigate("/login");
+            handleLoginRedirect();
             return;
         }
 
@@ -27,24 +34,41 @@ const CommentSection = ({ articleId, comments, onSubmitComment }) => {
         <section className="mt-12">
             <h3 className="text-2xl font-bold text-gray-900 mb-6">Bình luận</h3>
 
-            {/* Comment Form */}
-            <div className="bg-gray-50 rounded-lg p-6 mb-6">
-                <h4 className="font-semibold text-gray-900 mb-4">Để lại bình luận</h4>
-                <div className="space-y-4">
-                    <textarea
-                        value={commentContent}
-                        onChange={(e) => setCommentContent(e.target.value)}
-                        rows={4}
-                        placeholder="Nội dung bình luận"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-                    />
-                    <button
-                        onClick={handleSubmitComment}
-                        className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-colors cursor-pointer whitespace-nowrap">
-                        Gửi bình luận
-                    </button>
+            {/* thông báo cho user chưa đăng nhập */}
+            {!user && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <p className="text-blue-800">
+                        <button
+                            onClick={handleLoginRedirect}
+                            className="text-blue-600 underline hover:text-blue-800"
+                        >
+                            Đăng nhập
+                        </button> để có thể bình luận và tương tác với bài viết.
+                    </p>
                 </div>
-            </div>
+            )}
+
+            {/* Comment Form */}
+            {/* Comment Form - chỉ hiện khi đã đăng nhập */}
+            {user && (
+                <div className="bg-gray-50 rounded-lg p-6 mb-6">
+                    <h4 className="font-semibold text-gray-900 mb-4">Để lại bình luận</h4>
+                    <div className="space-y-4">
+                        <textarea
+                            value={commentContent}
+                            onChange={(e) => setCommentContent(e.target.value)}
+                            rows={4}
+                            placeholder="Nội dung bình luận"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                        />
+                        <button
+                            onClick={handleSubmitComment}
+                            className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-colors cursor-pointer whitespace-nowrap">
+                            Gửi bình luận
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Comments List */}
             <div className="space-y-6">

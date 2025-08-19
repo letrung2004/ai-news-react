@@ -7,6 +7,7 @@ import SimpleLoading from '../../components/SimpleLoading';
 import Breadcrumb from '../../components/Breadcrumb';
 import { Error } from '../../components/Error';
 import ListArticleByCategory from '../../components/reader/ListArticleByCategory';
+import Pagination from '../../components/Pagination';
 
 const ListArticle = () => {
     const { categorySlug } = useParams();
@@ -18,7 +19,6 @@ const ListArticle = () => {
         }
     }, [categorySlug]);
 
-    // Xử lý error
     if (error) return <Error message={error} onRetry={() => window.location.reload()} />;
 
     return (
@@ -37,26 +37,12 @@ const ListArticle = () => {
 
                                 <ListArticleByCategory articles={articles} />
 
-                                {/* Pagination - chưa xử lý phân trang*/}
-                                <div className="mt-12 flex justify-center">
-                                    <nav className="flex items-center space-x-2">
-                                        <button className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700">
-                                            Trước
-                                        </button>
-                                        <button className="px-3 py-2 text-sm bg-green-600 text-white rounded">
-                                            1
-                                        </button>
-                                        <button className="px-3 py-2 text-sm text-gray-700 hover:text-green-600">
-                                            2
-                                        </button>
-                                        <button className="px-3 py-2 text-sm text-gray-700 hover:text-green-600">
-                                            3
-                                        </button>
-                                        <button className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700">
-                                            Sau
-                                        </button>
-                                    </nav>
-                                </div>
+                                <Pagination
+                                    currentPage={1}
+                                    totalPages={5}
+                                    onPageChange={(page) => console.log("Chuyển sang trang:", page)}
+                                />
+
                             </div>
 
                             {/* Sidebar */}

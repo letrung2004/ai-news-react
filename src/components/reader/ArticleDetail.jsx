@@ -64,7 +64,7 @@ const ArticleDetail = ({ article }) => {
             {article.summary && (
                 <div className="mb-6">
                     <div className="text-xl text-gray-700 font-medium leading-relaxed bg-gray-50 p-4 rounded-lg border-l-4 border-blue-500">
-                        <p className="text-sm text-gray-500 mb-1">Tóm tắt bài viết:</p>
+                        <p className="text-sm text-gray-500 mb-1">Tóm tắt bài báo:</p>
                         {article.summary}
                     </div>
                 </div>
@@ -75,7 +75,7 @@ const ArticleDetail = ({ article }) => {
                 <div className="mt-8 p-4 rounded-lg">
                     <h3 className="text-lg font-semibold mb-3 text-gray-900">
                         <i className="fas fa-volume-up mr-2"></i>
-                        Nghe bài viết
+                        Nghe bài báo
                     </h3>
                     <audio controls className="w-full">
                         <source src={article.audioUrl} type="audio/mpeg" />

@@ -16,8 +16,8 @@ import Authenticate from './pages/auth/Authenticate'
 import AddCategory from './pages/manager/AddCategory'
 import AddTag from './pages/manager/AddTag'
 import AllArticles from './pages/manager/AllArticles'
-import AdminRoute from './components/AdminRoute'
-import SuperAdminRoute from './components/SuperAdminRoute'
+import AdminRoute from './components/routes/AdminRoute'
+import SuperAdminRoute from './components/routes/SuperAdminRoute'
 import ErrorBoundary from './components/ErrorBoundary'
 import UserManagement from './pages/manager/UserManagement'
 import CommentManagement from './pages/manager/CommentManagement'
@@ -47,19 +47,19 @@ function App() {
             </Route>
 
             {/* Admin route */}
-            <Route path="/admin" element={<AdminRoute element={<AdminLayout />} />} >
+            <Route path="/manager" element={<AdminRoute element={<AdminLayout />} />} >
               <Route index element={<AdminHome />} />
-              <Route path="/admin/articles/new" element={
+              <Route path="/manager/articles/new" element={
                 <ErrorBoundary>
                   <AddArticle />
                 </ErrorBoundary>
               } />
-              <Route path="/admin/categories" element={<AddCategory />} />
-              <Route path="/admin/tags" element={<AddTag />} />
-              <Route path="/admin/articles" element={<AllArticles />} />
-              <Route path="/admin/users" element={<SuperAdminRoute element={<UserManagement />} />} />
-              <Route path="/admin/settings" element={<SuperAdminRoute element={<SystemSettings />} />} />
-              <Route path="/admin/comments" element={<CommentManagement />} />
+              <Route path="/manager/categories" element={<AddCategory />} />
+              <Route path="/manager/tags" element={<AddTag />} />
+              <Route path="/manager/articles" element={<AllArticles />} />
+              <Route path="/manager/users" element={<SuperAdminRoute element={<UserManagement />} />} />
+              <Route path="/manager/settings" element={<SuperAdminRoute element={<SystemSettings />} />} />
+              <Route path="/manager/comments" element={<CommentManagement />} />
             </Route>
           </Routes>
         </BrowserRouter>

@@ -50,7 +50,9 @@ export default function Authenticate() {
 
     useEffect(() => {
         if (isLogin) {
-            navigate("/");
+            const redirectTo = localStorage.getItem('redirectAfterOAuth') || '/';
+            localStorage.removeItem('redirectAfterOAuth');
+            navigate(redirectTo, { replace: true });
         }
     }, [isLogin, navigate]);
 

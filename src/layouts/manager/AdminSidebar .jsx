@@ -13,7 +13,7 @@ const AdminSidebar = () => {
             id: 'dashboard',
             label: 'Tổng quan',
             icon: BarChart3,
-            path: '/admin',
+            path: '/manager',
             hasSubmenu: false,
             requiredRoles: ['ADMIN', 'EDITOR']
         },
@@ -28,28 +28,28 @@ const AdminSidebar = () => {
                     id: 'all-articles',
                     label: 'Tất cả bài báo',
                     icon: List,
-                    path: '/admin/articles',
+                    path: '/manager/articles',
                     requiredRoles: ['ADMIN', 'EDITOR']
                 },
                 {
                     id: 'add-new',
                     label: 'Thêm bài báo mới',
                     icon: Plus,
-                    path: '/admin/articles/new',
+                    path: '/manager/articles/new',
                     requiredRoles: ['ADMIN', 'EDITOR']
                 },
                 {
                     id: 'article-categories',
                     label: 'Danh mục bài báo',
                     icon: Folder,
-                    path: '/admin/categories',
+                    path: '/manager/categories',
                     requiredRoles: ['ADMIN', 'EDITOR']
                 },
                 {
                     id: 'tags',
                     label: 'Thẻ bài báo',
                     icon: Tag,
-                    path: '/admin/tags',
+                    path: '/manager/tags',
                     requiredRoles: ['ADMIN', 'EDITOR']
                 }
             ]
@@ -58,7 +58,7 @@ const AdminSidebar = () => {
             id: 'users',
             label: 'Quản lý người dùng',
             icon: Users,
-            path: '/admin/users',
+            path: '/manager/users',
             hasSubmenu: false,
             requiredRoles: ['ADMIN']
         },
@@ -66,7 +66,7 @@ const AdminSidebar = () => {
             id: 'comments',
             label: 'Quản lý bình luận',
             icon: MessageSquare,
-            path: '/admin/comments',
+            path: '/manager/comments',
             hasSubmenu: false,
             requiredRoles: ['ADMIN', 'EDITOR']
         },
@@ -74,7 +74,7 @@ const AdminSidebar = () => {
             id: 'settings',
             label: 'Cài đặt hệ thống',
             icon: Settings,
-            path: '/admin/settings',
+            path: '/manager/settings',
             hasSubmenu: false,
             requiredRoles: ['ADMIN']
         }
@@ -160,7 +160,7 @@ const AdminSidebar = () => {
         <div className="fixed left-0 top-0 h-full w-64 bg-white shadow-xl border-r border-gray-200 z-40">
             {/* Logo */}
             <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-white">
-                <Link to="/admin" className="flex items-center space-x-3">
+                <Link to="/manager" className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
                         <FileText className="w-5 h-5 text-white" />
                     </div>

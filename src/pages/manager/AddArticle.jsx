@@ -1,28 +1,28 @@
 import React from "react";
-import { Plus, Image, FileText, Save, Eye, FileCheck, User, Hash, Upload, PenLine, ChevronUp, ChevronDown, X, Tag } from "lucide-react";
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { editorConfig } from '../../configs/editorConfig';
 import { useArticle } from "../../hooks/useArticle";
 import { useCategory } from "../../hooks/useCategory";
 import { useTag } from "../../hooks/useTag";
 import Alert from "../../components/Alert";
 import useAlert from "../../hooks/useAlert";
+import TitleSection from "../../components/manager/article/TitleSection";
+import ContentEditor from "../../components/manager/article/ContentEditor";
+import FeaturedImage from "../../components/manager/article/FeaturedImage";
+import AuthorSection from "../../components/manager/article/AuthorSection";
+import CategorySection from "../../components/manager/article/CategorySection";
+import TagSection from "../../components/manager/article/TagSection";
+import LoadingOverlay from "../../components/manager/article/LoadingOverlay";
+import { Save, Eye, FileCheck } from "lucide-react";
 
 const AddArticle = () => {
     const { alert, hideAlert, showSuccess, showError } = useAlert();
     const {
-        // States
         addArticleForm,
-        collapsedSections,
         selectedTags, setSelectedTags,
         newAuthor, setNewAuthor,
         imagePreview,
         isSubmitting,
 
-        // Methods
         handleAddArticleFormChange,
-        toggleSection,
         handleCategoryChange,
         handleTagsChange,
         addAuthors,
@@ -35,13 +35,9 @@ const AddArticle = () => {
     const { categories } = useCategory();
     const { tags } = useTag();
 
-
-
-
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
             <div className="max-w-7xl mx-auto">
-                {/* Header */}
                 <div className="mb-8">
                     <div className="flex items-center justify-between">
                         <div>
@@ -74,231 +70,49 @@ const AddArticle = () => {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Main Content Area */}
                     <div className="lg:col-span-2 space-y-6">
-                        {/* Title */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <label className="block text-sm font-semibold text-gray-700 mb-3">
-                                Tiêu đề bài viết
-                            </label>
-                            <input
-                                type="text"
-                                value={addArticleForm.title}
-                                onChange={(e) => handleAddArticleFormChange('title', e.target.value)}
-                                placeholder="Nhập tiêu đề hấp dẫn cho bài viết..."
-                                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg font-medium placeholder-gray-400"
-                            />
-                        </div>
 
-                        {/* Rich Text Editor */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                            <div className="p-6">
-                                <label className="block text-sm font-semibold text-gray-700 mb-3">
-                                    Nội dung bài viết
-                                </label>
+                        <TitleSection
+                            title={addArticleForm.title}
+                            onChange={(value) => handleAddArticleFormChange('title', value)}
+                        />
 
-                                <div className="border border-gray-200 rounded-lg overflow-hidden min-h-[650px] ckeditor-content">
-                                    <CKEditor
-                                        editor={ClassicEditor}
-                                        config={editorConfig}
-                                        data={addArticleForm.content}
-                                        onChange={(event, editor) => {
-                                            const data = editor.getData();
-                                            handleAddArticleFormChange('content', data);
-                                        }}
-                                        onReady={(editor) => {
-                                            const editableElement = editor.editing.view.document.getRoot();
-                                            editor.editing.view.change(writer => {
-                                                writer.setStyle('min-height', '650px', editableElement);
-                                            });
-                                            console.log('CKEditor is ready to use!', editor);
-                                        }}
-                                        onError={(error, { willEditorRestart }) => {
-                                            console.error('CKEditor error:', error);
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        </div>
+                        <ContentEditor
+                            content={addArticleForm.content}
+                            onChange={(value) => handleAddArticleFormChange('content', value)}
+                        />
                     </div>
 
                     {/* Sidebar */}
                     <div className="space-y-4">
-                        {/* Featured Image */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                            <div
-                                className="flex items-center justify-between p-4 cursor-pointer"
-                                onClick={() => toggleSection('image')}
-                            >
-                                <h4 className="font-semibold text-gray-900 flex items-center space-x-2">
-                                    <Image className="w-4 h-4 text-orange-600" />
-                                    <span>Ảnh đại diện</span>
-                                </h4>
-                                {collapsedSections['image'] ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
-                            </div>
-
-                            {!collapsedSections['image'] && (
-                                <div className="p-4">
-                                    {imagePreview ? (
-                                        <div className="relative">
-                                            <img
-                                                src={imagePreview}
-                                                alt="Featured"
-                                                className="w-full h-32 object-cover rounded-lg"
-                                            />
-                                            <button
-                                                onClick={removeImage}
-                                                className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                                            >
-                                                <X className="w-3 h-3" />
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <div
-                                            onClick={() => document.getElementById('imageUpload').click()}
-                                            className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-green-400 transition-colors cursor-pointer"
-                                        >
-                                            <Upload className="w-8 h-8 text-gray-400 mx-auto mb-3" />
-                                            <p className="text-sm text-gray-600 mb-2">Kéo thả ảnh vào đây hoặc</p>
-                                            <span className="text-green-500 text-sm hover:text-green-600 font-medium">
-                                                Chọn ảnh từ máy tính
-                                            </span>
-                                            <input
-                                                id="imageUpload"
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={(e) => handleImageUpload(e.target.files[0])}
-                                                className="hidden"
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Author */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                            <div
-                                className="flex items-center justify-between p-4 cursor-pointer"
-                                onClick={() => toggleSection('authors')}
-                            >
-                                <h4 className="font-semibold text-gray-900 flex items-center space-x-2">
-                                    <User className="w-4 h-4 text-purple-600" />
-                                    <span>Biên tập viên</span>
-                                </h4>
-                                {collapsedSections['authors'] ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
-                            </div>
-
-                            {!collapsedSections['authors'] && (
-                                <div className="p-4 space-y-3">
-                                    <div className="flex space-x-2">
-                                        <input
-                                            type="text"
-                                            value={newAuthor}
-                                            onChange={(e) => setNewAuthor(e.target.value)}
-                                            onKeyPress={(e) => e.key === 'Enter' && addAuthors()}
-                                            placeholder="Nhập họ và tên"
-                                            className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                                        />
-                                        <button
-                                            onClick={addAuthors}
-                                            className="px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-                                        >
-                                            <Plus className="w-4 h-4" />
-                                        </button>
-                                    </div>
-
-                                    {addArticleForm.authors.length > 0 && (
-                                        <div className="flex flex-wrap gap-2">
-                                            {addArticleForm.authors.map((authors, index) => (
-                                                <span
-                                                    key={index}
-                                                    className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"
-                                                >
-                                                    <PenLine className="w-3 h-3 mr-1" />
-                                                    {authors}
-                                                    <button
-                                                        onClick={() => removeAuthors(authors)}
-                                                        className="ml-1 text-green-600 hover:text-green-800"
-                                                    >
-                                                        <X className="w-3 h-3" />
-                                                    </button>
-                                                </span>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Categories */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                            <div
-                                className="flex items-center justify-between p-4 cursor-pointer"
-                                onClick={() => toggleSection('categories')}
-                            >
-                                <h4 className="font-semibold text-gray-900 flex items-center space-x-2">
-                                    <FileText className="w-4 h-4 text-blue-600" />
-                                    <span>Danh mục</span>
-                                </h4>
-                                {collapsedSections['categories'] ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
-                            </div>
-
-                            {!collapsedSections['categories'] && (
-                                <div className="p-4 space-y-3">
-                                    <div className="max-h-32 overflow-y-auto space-y-2">
-                                        {categories?.result?.map((category, index) => (
-                                            <label key={index} className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded-lg">
-                                                <input
-                                                    type="radio"
-                                                    checked={addArticleForm.category === category.id}
-                                                    onChange={() => handleCategoryChange(category.id)}
-                                                    className="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                                                />
-                                                <span className="text-sm text-gray-700">{category.name}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Tags */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                            <div
-                                className="flex items-center justify-between p-4 cursor-pointer"
-                                onClick={() => toggleSection('tags')}
-                            >
-                                <h4 className="font-semibold text-gray-900 flex items-center space-x-2">
-                                    <Hash className="w-4 h-4 text-purple-600" />
-                                    <span>Thẻ</span>
-                                </h4>
-                                {collapsedSections['tags'] ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
-                            </div>
-
-                            {!collapsedSections['tags'] && (
-                                <div className="p-4 space-y-3">
-                                    <div className="max-h-32 overflow-y-auto space-y-2">
-                                        {tags?.result?.map((tag, index) => (
-                                            <label key={index} className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded-lg">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedTags.includes(tag.id)}
-                                                    onChange={() => handleTagsChange(tag.id)}
-                                                    className="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                                                />
-                                                <span className="text-sm text-gray-700">{tag.name}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-
+                        <FeaturedImage
+                            imagePreview={imagePreview}
+                            onImageUpload={handleImageUpload}
+                            onRemoveImage={removeImage}
+                        />
+                        <AuthorSection
+                            authors={addArticleForm.authors}
+                            newAuthor={newAuthor}
+                            setNewAuthor={setNewAuthor}
+                            onAddAuthor={addAuthors}
+                            onRemoveAuthor={removeAuthors}
+                        />
+                        <CategorySection
+                            categories={categories?.result || []}
+                            selectedCategory={addArticleForm.category}
+                            onCategoryChange={handleCategoryChange}
+                        />
+                        <TagSection
+                            tags={tags?.result || []}
+                            selectedTags={selectedTags}
+                            onTagChange={handleTagsChange}
+                        />
                     </div>
                 </div>
             </div>
+
+            {isSubmitting && <LoadingOverlay />}
+
             <Alert
                 type={alert.type}
                 title={alert.title}

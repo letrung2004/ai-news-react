@@ -4,6 +4,8 @@ import {
     UserPlus, Settings, FileText, Edit3, Trash2, ArrowUpRight,
     BarChart3, Activity, Clock, Calendar, Star, Filter
 } from "lucide-react";
+import StatsCard from "../../components/manager/StatsCard";
+import Pagination from "../../components/Pagination";
 
 const AdminHome = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
@@ -13,8 +15,6 @@ const AdminHome = () => {
         {
             title: 'Tổng bài viết',
             value: '2,847',
-            change: '+12%',
-            changeType: 'increase',
             icon: FileText,
             color: 'from-blue-500 to-blue-600',
             bgColor: 'bg-blue-50',
@@ -23,8 +23,6 @@ const AdminHome = () => {
         {
             title: 'Lượt xem hôm nay',
             value: '45,623',
-            change: '+8%',
-            changeType: 'increase',
             icon: Eye,
             color: 'from-green-500 to-green-600',
             bgColor: 'bg-green-50',
@@ -33,8 +31,6 @@ const AdminHome = () => {
         {
             title: 'Bình luận mới',
             value: '1,234',
-            change: '+15%',
-            changeType: 'increase',
             icon: MessageSquare,
             color: 'from-purple-500 to-purple-600',
             bgColor: 'bg-purple-50',
@@ -43,8 +39,6 @@ const AdminHome = () => {
         {
             title: 'Người dùng online',
             value: '892',
-            change: '+5%',
-            changeType: 'increase',
             icon: Users,
             color: 'from-orange-500 to-orange-600',
             bgColor: 'bg-orange-50',
@@ -133,24 +127,6 @@ const AdminHome = () => {
         }
     ];
 
-    const getStatusBadge = (status) => {
-        const statusConfig = {
-            published: {
-                label: 'Đã xuất bản',
-                color: 'bg-green-100 text-green-800 border-green-200'
-            },
-            pending: {
-                label: 'Đang chờ',
-                color: 'bg-yellow-100 text-yellow-800 border-yellow-200'
-            },
-            draft: {
-                label: 'Nháp',
-                color: 'bg-gray-100 text-gray-800 border-gray-200'
-            }
-        };
-        return statusConfig[status] || statusConfig.draft;
-    };
-
     const getCategoryColor = (category) => {
         const colors = {
             'Công nghệ': 'bg-blue-100 text-blue-800 border-blue-200',
@@ -169,7 +145,7 @@ const AdminHome = () => {
                 <div className="mb-8">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
+                            <h1 className="text-3xl font-bold text-gray-900 mb-2">Tổng quan</h1>
                             <p className="text-gray-600">Chào mừng trở lại! Đây là tổng quan về hoạt động của website.</p>
                         </div>
                         <div className="flex items-center space-x-3">
@@ -191,29 +167,7 @@ const AdminHome = () => {
                 </div>
 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    {statsData.map((stat, index) => {
-                        const IconComponent = stat.icon;
-                        return (
-                            <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 group">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex-1">
-                                        <p className="text-sm font-medium text-gray-600 mb-1">{stat.title}</p>
-                                        <p className="text-2xl font-bold text-gray-900 mb-2">{stat.value}</p>
-                                        <div className="flex items-center space-x-1">
-                                            <ArrowUpRight className="w-4 h-4 text-green-600" />
-                                            <span className="text-sm font-medium text-green-600">{stat.change}</span>
-                                            <span className="text-sm text-gray-500">từ hôm qua</span>
-                                        </div>
-                                    </div>
-                                    <div className={`w-14 h-14 ${stat.bgColor} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                                        <IconComponent className={`w-7 h-7 ${stat.iconColor}`} />
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
+                <StatsCard statsData={statsData} />
 
                 {/* Main Content Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -291,14 +245,12 @@ const AdminHome = () => {
                                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Danh mục</th>
                                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tác giả</th>
                                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Ngày</th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Trạng thái</th>
                                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Lượt xem</th>
                                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {recentArticles.map((article) => {
-                                    const statusConfig = getStatusBadge(article.status);
                                     const categoryColor = getCategoryColor(article.category);
 
                                     return (
@@ -335,11 +287,7 @@ const AdminHome = () => {
                                                     <span>{article.date}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4">
-                                                <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${statusConfig.color}`}>
-                                                    {statusConfig.label}
-                                                </span>
-                                            </td>
+
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center space-x-1 text-sm text-gray-600">
                                                     <Eye className="w-3 h-3" />
@@ -366,29 +314,16 @@ const AdminHome = () => {
                         </table>
                     </div>
 
-                    {/* Table Footer */}
-                    <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-                        <div className="flex items-center justify-between">
-                            <div className="text-sm text-gray-600">
-                                Hiển thị <span className="font-medium">1-5</span> của <span className="font-medium">234</span> bài viết
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <button className="px-3 py-1 bg-white border border-gray-200 rounded-md text-sm hover:bg-gray-50 transition-colors">
-                                    Trước
-                                </button>
-                                <button className="px-3 py-1 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 transition-colors">
-                                    1
-                                </button>
-                                <button className="px-3 py-1 bg-white border border-gray-200 rounded-md text-sm hover:bg-gray-50 transition-colors">
-                                    2
-                                </button>
-                                <button className="px-3 py-1 bg-white border border-gray-200 rounded-md text-sm hover:bg-gray-50 transition-colors">
-                                    Sau
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
+
+
+                <Pagination
+                    currentPage={1}
+                    totalPages={5}
+                    onPageChange={(page) => console.log("Chuyển sang trang:", page)}
+                />
+
             </div>
         </div>
     );

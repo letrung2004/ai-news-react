@@ -9,7 +9,7 @@ const SimpleLoading = () => {
                     <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
 
                     {/* Loading Text */}
-                    <p className="text-gray-600 font-medium">Đang tải bài viết...</p>
+                    <p className="text-gray-600 font-medium">Đang tải...</p>
                 </div>
             </div>
         </main>

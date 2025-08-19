@@ -25,14 +25,6 @@ export const useArticle = (showSuccess, showError) => {
         }));
     };
 
-
-    const toggleSection = (sectionId) => {
-        setCollapsedSections(prev => ({
-            ...prev,
-            [sectionId]: !prev[sectionId]
-        }));
-    };
-
     const handleCategoryChange = (clickedCategory) => {
         if (addArticleForm.category === clickedCategory) {
             setAddArticleForm({ ...addArticleForm, category: '' });
@@ -146,18 +138,13 @@ export const useArticle = (showSuccess, showError) => {
     }, [imagePreview]);
 
     return {
-        // States
         addArticleForm,
-        collapsedSections,
         selectedTags, setSelectedTags,
         newAuthor, setNewAuthor,
         imagePreview,
         isSubmitting,
 
-
-        // Methods
         handleAddArticleFormChange,
-        toggleSection,
         handleCategoryChange,
         handleTagsChange,
         addAuthors,

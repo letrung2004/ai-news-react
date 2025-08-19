@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "./useAuth";
 import { authService } from "../services/authService";
 import { buildOAuthUrl, handleApiError } from "../utils/helpers";
@@ -10,6 +10,8 @@ const useLogin = () => {
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+
     const { login } = useAuth();
 
     const validate = (credentials) => {
@@ -55,7 +57,8 @@ const useLogin = () => {
 
             login(userResponse.result, token);
 
-            navigate("/");
+            const redirectTo = location.state?.from || "/";
+            navigate(redirectTo, { replace: true });
 
             return { success: true };
         } catch (error) {
@@ -96,7 +99,8 @@ const useLogin = () => {
 
             login(userResponse.result, token);
 
-            navigate("/admin");
+            const redirectTo = location.state?.from || "/manager";
+            navigate(redirectTo, { replace: true });
 
             return { success: true };
         } catch (error) {
@@ -114,6 +118,10 @@ const useLogin = () => {
 
     const loginWithGoogle = () => {
         try {
+            // luu redirect URL vào localStorage trước khi redirect de login google
+            const redirectTo = location.state?.from || "/";
+            localStorage.setItem('redirectAfterOAuth', redirectTo);
+
             const targetUrl = buildOAuthUrl(oauth);
             window.location.href = targetUrl;
         } catch (error) {

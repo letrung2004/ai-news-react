@@ -14,12 +14,13 @@ import {
     Clock,
     TrendingUp
 } from "lucide-react";
+import FilterBar from "../../components/manager/FilterBar";
+import Pagination from "../../components/Pagination";
+import ArticlesList from "../../components/manager/article/ArticlesList";
 
 const AllArticles = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [statusFilter, setStatusFilter] = useState('all');
     const [categoryFilter, setCategoryFilter] = useState('all');
-    const [sortBy, setSortBy] = useState('newest');
 
     // Mock data cho bài viết
     const [articles, setArticles] = useState([
@@ -90,29 +91,11 @@ const AllArticles = () => {
         }
     ]);
 
-    const categories = ['Tất cả', 'Công nghệ', 'Marketing', 'Thiết kế', 'Kinh doanh'];
-    const statuses = [
-        { value: 'all', label: 'Tất cả', count: articles.length },
-        { value: 'published', label: 'Đã xuất bản', count: articles.filter(a => a.status === 'published').length },
-        { value: 'draft', label: 'Nháp', count: articles.filter(a => a.status === 'draft').length },
-        { value: 'review', label: 'Chờ duyệt', count: articles.filter(a => a.status === 'review').length }
+    const categories = [
+        { value: 'tech', label: 'Công nghệ' },
+        { value: 'news', label: 'Tin tức' },
+        { value: 'sport', label: 'Thể thaoo' }
     ];
-
-    const getStatusBadge = (status) => {
-        const statusConfig = {
-            published: { icon: CheckCircle, class: 'bg-green-100 text-green-800', label: 'Đã xuất bản' },
-            draft: { icon: Clock, class: 'bg-yellow-100 text-yellow-800', label: 'Nháp' },
-            review: { icon: XCircle, class: 'bg-orange-100 text-orange-800', label: 'Chờ duyệt' }
-        };
-        const config = statusConfig[status];
-        const Icon = config.icon;
-        return (
-            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${config.class}`}>
-                <Icon className="w-3 h-3 mr-1" />
-                {config.label}
-            </span>
-        );
-    };
 
     const handleDelete = (id) => {
         if (window.confirm('Bạn có chắc chắn muốn xóa bài viết này?')) {
@@ -123,16 +106,14 @@ const AllArticles = () => {
     const filteredArticles = articles.filter(article => {
         const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             article.author.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus = statusFilter === 'all' || article.status === statusFilter;
         const matchesCategory = categoryFilter === 'all' || article.category === categoryFilter;
-
-        return matchesSearch && matchesStatus && matchesCategory;
+        return matchesSearch && matchesCategory;
     });
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
             <div className="max-w-7xl mx-auto">
-                {/* Header */}
+
                 <div className="mb-8">
                     <div className="flex items-center justify-between">
                         <div>
@@ -152,181 +133,21 @@ const AllArticles = () => {
                     </div>
                 </div>
 
-                {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    {statuses.map((status, index) => (
-                        <div key={status.value} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm font-medium text-gray-600">{status.label}</p>
-                                    <p className="text-2xl font-bold text-gray-900 mt-1">{status.count}</p>
-                                </div>
-                                <div className={`p-3 rounded-full ${index === 0 ? 'bg-blue-100' :
-                                        index === 1 ? 'bg-green-100' :
-                                            index === 2 ? 'bg-yellow-100' : 'bg-orange-100'
-                                    }`}>
-                                    <FileText className={`w-6 h-6 ${index === 0 ? 'text-blue-600' :
-                                            index === 1 ? 'text-green-600' :
-                                                index === 2 ? 'text-yellow-600' : 'text-orange-600'
-                                        }`} />
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                <FilterBar
+                    searchTerm={searchTerm}
+                    onSearchChange={setSearchTerm}
+                    selectOptions={categories}
+                    selectValue={categoryFilter}
+                    onSelectChange={setCategoryFilter}
+                />
+                <ArticlesList articles={filteredArticles} onDelete={handleDelete} />
 
-                {/* Filters */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div className="relative">
-                            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                            <input
-                                type="text"
-                                placeholder="Tìm kiếm bài viết..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                            />
-                        </div>
+                <Pagination
+                    currentPage={1}
+                    totalPages={5}
+                    onPageChange={(page) => console.log("Chuyển sang trang:", page)}
+                />
 
-                        <select
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
-                            className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        >
-                            {statuses.map(status => (
-                                <option key={status.value} value={status.value}>{status.label}</option>
-                            ))}
-                        </select>
-
-                        <select
-                            value={categoryFilter}
-                            onChange={(e) => setCategoryFilter(e.target.value)}
-                            className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        >
-                            {categories.map(category => (
-                                <option key={category} value={category === 'Tất cả' ? 'all' : category}>{category}</option>
-                            ))}
-                        </select>
-
-                        <select
-                            value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value)}
-                            className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        >
-                            <option value="newest">Mới nhất</option>
-                            <option value="oldest">Cũ nhất</option>
-                            <option value="views">Lượt xem</option>
-                            <option value="comments">Bình luận</option>
-                        </select>
-                    </div>
-                </div>
-
-                {/* Articles List */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-                    <div className="divide-y divide-gray-200">
-                        {filteredArticles.length > 0 ? (
-                            filteredArticles.map((article) => (
-                                <div key={article.id} className="p-6 hover:bg-gray-50 transition-colors">
-                                    <div className="flex items-start space-x-4">
-                                        <img
-                                            src={article.image}
-                                            alt={article.title}
-                                            className="w-20 h-16 object-cover rounded-lg flex-shrink-0"
-                                        />
-
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-start justify-between">
-                                                <div className="flex-1">
-                                                    <div className="flex items-center space-x-2 mb-2">
-                                                        <h3 className="text-lg font-semibold text-gray-900 hover:text-green-600 cursor-pointer">
-                                                            {article.title}
-                                                        </h3>
-                                                        {article.featured && (
-                                                            <span className="px-2 py-1 bg-red-100 text-red-600 text-xs rounded-full font-medium">
-                                                                Nổi bật
-                                                            </span>
-                                                        )}
-                                                    </div>
-
-                                                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                                                        {article.excerpt}
-                                                    </p>
-
-                                                    <div className="flex items-center space-x-6 text-sm text-gray-500">
-                                                        <div className="flex items-center space-x-1">
-                                                            <User className="w-4 h-4" />
-                                                            <span>{article.author}</span>
-                                                        </div>
-                                                        <div className="flex items-center space-x-1">
-                                                            <Calendar className="w-4 h-4" />
-                                                            <span>{article.publishDate}</span>
-                                                        </div>
-                                                        <div className="flex items-center space-x-1">
-                                                            <Eye className="w-4 h-4" />
-                                                            <span>{article.views.toLocaleString()}</span>
-                                                        </div>
-                                                        <div className="flex items-center space-x-1">
-                                                            <span>{article.comments} bình luận</span>
-                                                        </div>
-                                                        <span className="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded-full">
-                                                            {article.category}
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex items-center space-x-2 ml-4">
-                                                    {getStatusBadge(article.status)}
-                                                    <div className="flex items-center space-x-1">
-                                                        <button className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                                                            <Eye className="w-4 h-4" />
-                                                        </button>
-                                                        <button className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
-                                                            <Edit className="w-4 h-4" />
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleDelete(article.id)}
-                                                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                        >
-                                                            <Trash2 className="w-4 h-4" />
-                                                        </button>
-                                                        <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
-                                                            <MoreVertical className="w-4 h-4" />
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="p-12 text-center">
-                                <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                                <p className="text-gray-500">Không tìm thấy bài viết nào</p>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Pagination */}
-                <div className="mt-6 flex items-center justify-between">
-                    <p className="text-sm text-gray-500">
-                        Hiển thị {filteredArticles.length} trên tổng số {articles.length} bài viết
-                    </p>
-                    <div className="flex items-center space-x-2">
-                        <button className="px-3 py-2 border border-gray-300 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors">
-                            Trước
-                        </button>
-                        <button className="px-3 py-2 bg-green-500 text-white rounded-lg">1</button>
-                        <button className="px-3 py-2 border border-gray-300 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors">
-                            2
-                        </button>
-                        <button className="px-3 py-2 border border-gray-300 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors">
-                            Sau
-                        </button>
-                    </div>
-                </div>
             </div>
         </div>
     );
