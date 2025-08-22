@@ -16,6 +16,7 @@ export const ENDPOINTS = {
         GET_COMMENTS: (articleId) => `/comment/article/${articleId}`,
         GET_ALL_TAGS: '/content/tag',
         GET_ALL_ARTICLE_BY_CATEGORY: (categorySlug) => `/content/article/all/${categorySlug}`,
+        SEND_QUESTION: '/ai/ask',
     },
     ADMIN: {
         CREATE_CATEGORY: '/content/category/create',

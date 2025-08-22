@@ -27,15 +27,15 @@ export const articleService = {
     },
 
     //get all article
-    getAllArticle: async () => {
-        const response = await API.get(ENDPOINTS.NEWS.GET_ALL_ARTICLE);
-        return response.data.result.data;
+    getAllArticle: async (page = 1) => {
+        const response = await API.get(`${ENDPOINTS.NEWS.GET_ALL_ARTICLE}?page=${page}`);
+        return response.data.result;
     },
 
     //get all article by category
-    getAllArticleByCategory: async (categorySlug) => {
-        const response = await API.get(ENDPOINTS.NEWS.GET_ALL_ARTICLE_BY_CATEGORY(categorySlug));
-        return response.data.result.data;
+    getAllArticleByCategory: async (categorySlug, page = 1) => {
+        const response = await API.get(`${ENDPOINTS.NEWS.GET_ALL_ARTICLE_BY_CATEGORY(categorySlug)}?page=${page}`);
+        return response.data.result;
     },
 
     // get all article comment

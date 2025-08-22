@@ -7,11 +7,11 @@ import SimpleLoading from '../../components/SimpleLoading';
 import Breadcrumb from '../../components/Breadcrumb';
 import { Error } from '../../components/Error';
 import ListArticleByCategory from '../../components/reader/ListArticleByCategory';
-import Pagination from '../../components/Pagination';
+import Chatbot from '../../components/reader/Chatbot';
 
 const ListArticle = () => {
     const { categorySlug } = useParams();
-    const { articles, loading, error, loadArticlesByCategory } = usePublicArticles(categorySlug);
+    const { articles, loading, error, loadArticlesByCategory, loadingMore, hasMore, currentPage, totalPages, loadMoreArticlesByCategory } = usePublicArticles(categorySlug);
 
     useEffect(() => {
         if (categorySlug) {
@@ -20,6 +20,12 @@ const ListArticle = () => {
     }, [categorySlug]);
 
     if (error) return <Error message={error} onRetry={() => window.location.reload()} />;
+
+    const handleLoadMore = () => {
+        if (!loadingMore && hasMore) {
+            loadMoreArticlesByCategory();
+        }
+    };
 
     return (
         <>
@@ -31,21 +37,37 @@ const ListArticle = () => {
                         <Breadcrumb />
 
                         <div className="grid grid-cols-12 gap-8">
-                            {/* Main Content */}
+
                             <div className="col-span-8">
                                 <h1 className="text-3xl font-bold text-gray-900 mb-8">Danh sách bài viết</h1>
 
                                 <ListArticleByCategory articles={articles} />
 
-                                <Pagination
-                                    currentPage={1}
-                                    totalPages={5}
-                                    onPageChange={(page) => console.log("Chuyển sang trang:", page)}
-                                />
-
+                                {hasMore && (
+                                    <div className="flex justify-center mt-8">
+                                        <button
+                                            onClick={handleLoadMore}
+                                            disabled={loadingMore}
+                                            className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-300 shadow-md hover:shadow-lg flex items-center gap-2"
+                                        >
+                                            {loadingMore ? (
+                                                <>
+                                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                                    Đang tải...
+                                                </>
+                                            ) : (
+                                                'Xem thêm'
+                                            )}
+                                        </button>
+                                    </div>
+                                )}
+                                {!hasMore && articles.length > 0 && (
+                                    <div className="text-center mt-4 text-sm text-gray-500">
+                                        Đã hiển thị tất cả bài báo
+                                    </div>
+                                )}
                             </div>
 
-                            {/* Sidebar */}
                             <div className="col-span-4">
                                 <div className="space-y-8">
                                     {/* Popular Articles Component */}
@@ -59,6 +81,8 @@ const ListArticle = () => {
                     </div>
                 </div>
             )}
+
+
         </>
     );
 };

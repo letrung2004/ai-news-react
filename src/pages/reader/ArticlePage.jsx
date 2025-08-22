@@ -8,11 +8,12 @@ import Breadcrumb from "../../components/Breadcrumb";
 import ArticleDetail from "../../components/reader/ArticleDetail";
 import CommentSection from "../../components/reader/CommentSection";
 import { Error } from "../../components/Error";
+import Chatbot from "../../components/reader/Chatbot";
 
 const ArticlePage = () => {
     const { articleSlug } = useParams();
     const { detailArticle, loading, error, loadDetailArticles, comments, handleCreateComment } = usePublicArticles();
-
+    console.log("Detail Article:", detailArticle?.result);
     useEffect(() => {
         if (articleSlug) {
             loadDetailArticles(articleSlug);
@@ -66,6 +67,7 @@ const ArticlePage = () => {
                     </div>
                 </main>
             )}
+            <Chatbot articleId={detailArticle?.result.id} />
         </>
     );
 };

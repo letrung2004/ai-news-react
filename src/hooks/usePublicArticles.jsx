@@ -7,21 +7,53 @@ const usePublicArticles = (categorySlug) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [detailArticle, setDetailArticle] = useState(null);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
-    const loadArticles = async () => {
+    const loadArticles = async (page = 1, append = false) => {
         try {
-            setLoading(true);
+            if (page === 1) {
+                setLoading(true);
+            } else {
+                setLoadingMore(true);
+            }
             setError(null);
-            const response = await articleService.getAllArticle();
-            setArticles(response);
+
+            const response = await articleService.getAllArticle(page);
+
+            const articlesData = response.data || response;
+            const currentPageNum = response.currentPage || page;
+            const totalPagesNum = response.totalPages || 1;
+
+            if (append) {
+                setArticles(prev => [...prev, ...articlesData]);
+            } else {
+                setArticles(articlesData);
+            }
+
+            setCurrentPage(currentPageNum);
+            setTotalPages(totalPagesNum);
+            setHasMore(currentPageNum < totalPagesNum);
 
         } catch (err) {
             console.error('Error loading articles:', err);
             setError(err.message || 'Có lỗi xảy ra khi tải bài viết');
-            setArticles([]);
+            if (!append) {
+                setArticles([]);
+            }
         } finally {
             setLoading(false);
+            setLoadingMore(false);
         }
+    };
+
+    const loadMoreArticles = async () => {
+        if (!hasMore || loadingMore) return;
+
+        const nextPage = currentPage + 1;
+        await loadArticles(nextPage, true);
     };
 
     const loadDetailArticles = async (slug) => {
@@ -33,7 +65,6 @@ const usePublicArticles = (categorySlug) => {
             setDetailArticle(response);
             loadCommentArticle(response.result.id);
 
-
         } catch (err) {
             console.error('Error loading article:', err);
             setError(err.message || 'Có lỗi xảy ra khi tải bài viết');
@@ -43,20 +74,48 @@ const usePublicArticles = (categorySlug) => {
         }
     };
 
-    const loadArticlesByCategory = async (categorySlug) => {
+    const loadArticlesByCategory = async (categorySlug, page = 1, append = false) => {
         try {
-            setLoading(true);
+            if (page === 1) {
+                setLoading(true);
+            } else {
+                setLoadingMore(true);
+            }
             setError(null);
-            const response = await articleService.getAllArticleByCategory(categorySlug);
-            setArticles(response);
+
+            const response = await articleService.getAllArticleByCategory(categorySlug, page);
+
+            const articlesData = response.data || response;
+            const currentPageNum = response.currentPage || page;
+            const totalPagesNum = response.totalPages || 1;
+
+            if (append) {
+                setArticles(prev => [...prev, ...articlesData]);
+            } else {
+                setArticles(articlesData);
+            }
+
+            setCurrentPage(currentPageNum);
+            setTotalPages(totalPagesNum);
+            setHasMore(currentPageNum < totalPagesNum);
 
         } catch (err) {
             console.error('Error loading articles by category:', err);
             setError(err.message || 'Có lỗi xảy ra khi tải bài viết');
-            setArticles([]);
+            if (!append) {
+                setArticles([]);
+            }
         } finally {
             setLoading(false);
+            setLoadingMore(false);
         }
+    };
+
+    const loadMoreArticlesByCategory = async (categorySlug) => {
+        if (!hasMore || loadingMore) return;
+
+        const nextPage = currentPage + 1;
+        await loadArticlesByCategory(categorySlug, nextPage, true);
     };
 
     const loadCommentArticle = async (articleId) => {
@@ -95,26 +154,42 @@ const usePublicArticles = (categorySlug) => {
         }
     };
 
+    // Reset pagination when category changes
+    const resetPagination = () => {
+        setCurrentPage(1);
+        setTotalPages(1);
+        setHasMore(true);
+        setArticles([]);
+    };
+
     useEffect(() => {
+        resetPagination();
         if (categorySlug) {
-            loadArticlesByCategory(categorySlug);
+            loadArticlesByCategory(categorySlug, 1, false);
         } else {
-            loadArticles();
+            loadArticles(1, false);
         }
     }, [categorySlug]);
 
-
     return {
-        articles, comments,
+        articles,
+        comments,
         loading,
         error,
-        refetchArticles: loadArticles,
+        hasMore,
+        loadingMore,
+        currentPage,
+        totalPages,
+        refetchArticles: () => loadArticles(1, false),
+        loadMoreArticles,
+        loadMoreArticlesByCategory: () => loadMoreArticlesByCategory(categorySlug),
         detailArticle,
         setDetailArticle,
         loadDetailArticles,
         loadArticlesByCategory,
         loadCommentArticle,
-        setComments, handleCreateComment
+        setComments,
+        handleCreateComment
     };
 };
 
