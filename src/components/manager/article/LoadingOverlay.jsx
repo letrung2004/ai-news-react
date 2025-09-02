@@ -18,7 +18,7 @@ const LoadingOverlay = () => {
                 {/* Loading text */}
                 <div className="space-y-3">
                     <h3 className="text-xl font-semibold text-gray-900">
-                        Đang xuất bản bài viết...
+                        Đang lưu bài báo...
                     </h3>
                     <p className="text-gray-600 text-sm">
                         Vui lòng đợi trong giây lát

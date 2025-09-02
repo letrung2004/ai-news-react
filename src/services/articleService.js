@@ -16,9 +16,32 @@ export const articleService = {
         return response.data;
     },
 
+    //get all article status for admin
+    getAllArticleForAdmin: async (page = 1) => {
+        const response = await AUTH_REQUEST.get(`${ENDPOINTS.ADMIN.GET_ALL_ARTICLE}?page=${page}`);
+        return response.data.result;
+    },
+
     //update article
+    updateArticle: async (articleId, articleData) => {
+        const response = await AUTH_REQUEST.put(ENDPOINTS.ADMIN.UPDATE_ARTICLE(articleId), articleData);
+        return response.data;
+    },
 
     //delete article
+    deleteArticle: async (articleId) => {
+        const response = await AUTH_REQUEST.delete(ENDPOINTS.ADMIN.DELETE_ARTICLE(articleId));
+        return response.data;
+    },
+
+    //update status
+    updateStatusArticle: async (articleId, status) => {
+        const response = await AUTH_REQUEST.patch(
+            ENDPOINTS.ADMIN.UPDATE_ARTICLE_STATUS(articleId),
+            { status }
+        );
+        return response.data;
+    },
 
     //get detail article
     getDetailArticle: async (articleSlug) => {

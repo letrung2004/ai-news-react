@@ -14,10 +14,10 @@ import LoadingOverlay from "../../components/manager/article/LoadingOverlay";
 import { Save, Eye, FileCheck } from "lucide-react";
 
 const AddArticle = () => {
-    const { alert, hideAlert, showSuccess, showError } = useAlert();
+    const { alert, hideAlert } = useAlert();
     const {
         addArticleForm,
-        selectedTags, setSelectedTags,
+        selectedTags,
         newAuthor, setNewAuthor,
         imagePreview,
         isSubmitting,
@@ -30,7 +30,7 @@ const AddArticle = () => {
         handleImageUpload,
         removeImage,
         handleSubmit
-    } = useArticle(showSuccess, showError);
+    } = useArticle();
 
     const { categories } = useCategory();
     const { tags } = useTag();
@@ -46,24 +46,12 @@ const AddArticle = () => {
                         </div>
                         <div className="flex items-center space-x-3">
                             <button
-                                onClick={() => handleSubmit(true)}
-                                disabled={isSubmitting}
-                                className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                <Save className="w-4 h-4" />
-                                <span>{isSubmitting ? 'Đang lưu...' : 'Lưu nháp'}</span>
-                            </button>
-                            <button className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2">
-                                <Eye className="w-4 h-4" />
-                                <span>Xem trước</span>
-                            </button>
-                            <button
                                 onClick={() => handleSubmit(false)}
                                 disabled={isSubmitting}
                                 className="px-6 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all shadow-lg flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <FileCheck className="w-4 h-4" />
-                                <span>{isSubmitting ? 'Đang xuất bản...' : 'Xuất bản'}</span>
+                                <span>{isSubmitting ? 'Đang lưu bài...' : 'Lưu bài báo'}</span>
                             </button>
                         </div>
                     </div>

@@ -1,126 +1,114 @@
-import React, { useState } from "react";
-import {
-    Search,
-    Eye,
-    Edit,
-    Trash2,
-    Filter,
-    Calendar,
-    User,
-    FileText,
-    MoreVertical,
-    CheckCircle,
-    XCircle,
-    Clock,
-    TrendingUp
-} from "lucide-react";
+import React, { useState, useEffect } from "react";
 import FilterBar from "../../components/manager/FilterBar";
 import Pagination from "../../components/Pagination";
 import ArticlesList from "../../components/manager/article/ArticlesList";
+import Alert from "../../components/Alert";
+import ConfirmDialog from "../../components/ConfirmDialog";
+import { Error } from "../../components/Error";
+import SimpleLoading from "../../components/SimpleLoading";
+
+import { useArticle } from "../../hooks/useArticle";
+import useAlert from "../../hooks/useAlert";
+import useConfirmDialog from "../../hooks/useConfirmDialog";
 
 const AllArticles = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [categoryFilter, setCategoryFilter] = useState('all');
+    const { alert, showSuccess, showError, hideAlert } = useAlert();
+    const {
+        confirmDialog,
+        handleConfirm,
+        handleCancel,
+        showDeleteConfirm,
+        showWarningConfirm
+    } = useConfirmDialog();
 
-    // Mock data cho bài viết
-    const [articles, setArticles] = useState([
-        {
-            id: 1,
-            title: "Hướng dẫn React Hook useEffect cho người mới bắt đầu",
-            excerpt: "Tìm hiểu cách sử dụng useEffect để quản lý side effects trong React components...",
-            author: "Nguyễn Văn A",
-            category: "Công nghệ",
-            status: "published",
-            publishDate: "2024-08-05",
-            views: 1250,
-            comments: 23,
-            featured: true,
-            image: "https://via.placeholder.com/150x100"
-        },
-        {
-            id: 2,
-            title: "Top 10 framework JavaScript phổ biến năm 2024",
-            excerpt: "Khám phá những framework JavaScript được yêu thích nhất trong cộng đồng developer...",
-            author: "Trần Thị B",
-            category: "Công nghệ",
-            status: "draft",
-            publishDate: "2024-08-04",
-            views: 856,
-            comments: 12,
-            featured: false,
-            image: "https://via.placeholder.com/150x100"
-        },
-        {
-            id: 3,
-            title: "Cách tối ưu hóa SEO cho website của bạn",
-            excerpt: "Những kỹ thuật SEO hiệu quả giúp website tăng traffic từ công cụ tìm kiếm...",
-            author: "Lê Văn C",
-            category: "Marketing",
-            status: "published",
-            publishDate: "2024-08-03",
-            views: 2341,
-            comments: 45,
-            featured: true,
-            image: "https://via.placeholder.com/150x100"
-        },
-        {
-            id: 4,
-            title: "Node.js vs Python: So sánh chi tiết",
-            excerpt: "Phân tích ưu nhược điểm của Node.js và Python trong phát triển backend...",
-            author: "Phạm Thị D",
-            category: "Công nghệ",
-            status: "review",
-            publishDate: "2024-08-02",
-            views: 634,
-            comments: 8,
-            featured: false,
-            image: "https://via.placeholder.com/150x100"
-        },
-        {
-            id: 5,
-            title: "Thiết kế UI/UX hiện đại với Figma",
-            excerpt: "Hướng dẫn sử dụng Figma để tạo ra những giao diện đẹp mắt và thân thiện...",
-            author: "Hoàng Văn E",
-            category: "Thiết kế",
-            status: "published",
-            publishDate: "2024-08-01",
-            views: 1876,
-            comments: 34,
-            featured: false,
-            image: "https://via.placeholder.com/150x100"
-        }
-    ]);
+    const {
+        articles,
+        pagination,
+        loading,
+        error,
+        loadArticles,
+        changeArticleStatus,
+        deleteArticle
+    } = useArticle();
 
-    const categories = [
-        { value: 'tech', label: 'Công nghệ' },
-        { value: 'news', label: 'Tin tức' },
-        { value: 'sport', label: 'Thể thaoo' }
-    ];
+    const statusLabels = {
+        'PENDING': 'Chờ duyệt',
+        'PUBLISHED': 'Xuất bản',
+        'ARCHIVED': 'Lưu trữ',
+        'REJECTED': 'Từ chối'
+    };
 
-    const handleDelete = (id) => {
-        if (window.confirm('Bạn có chắc chắn muốn xóa bài viết này?')) {
-            setArticles(prev => prev.filter(article => article.id !== id));
+    useEffect(() => {
+        loadArticles(1);
+    }, []);
+
+
+    const handleDeleteAction = async (articleId) => {
+        const result = await deleteArticle(articleId);
+
+        if (result.success) {
+            showSuccess('Thành công', result.message);
+        } else {
+            showError('Lỗi', result.message);
         }
     };
 
-    const filteredArticles = articles.filter(article => {
-        const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            article.author.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = categoryFilter === 'all' || article.category === categoryFilter;
-        return matchesSearch && matchesCategory;
-    });
+    const handleDelete = (articleId, title) => {
+        showDeleteConfirm(
+            title || 'bài viết này',
+            handleDeleteAction,
+            articleId
+        );
+    };
+
+    const handleStatusChangeAction = async (data) => {
+        const { articleId, newStatus } = data;
+        const result = await changeArticleStatus(articleId, newStatus);
+
+        if (result.success) {
+            showSuccess('Thành công', result.message);
+        } else {
+            showError('Lỗi', result.message);
+        }
+    };
+
+    const handleStatusChange = (articleId, newStatus) => {
+        showWarningConfirm(
+            'Xác nhận thay đổi trạng thái',
+            `Bạn có muốn thay đổi trạng thái bài viết thành "${statusLabels[newStatus]}"?`,
+            handleStatusChangeAction,
+            { articleId, newStatus }
+        );
+    };
+
+    const handlePageChange = (page) => {
+        loadArticles(page);
+    };
+
+    const handleRetry = () => {
+        window.location.reload();
+    };
+
+    if (error) {
+        return <Error message={error} onRetry={handleRetry} />;
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
             <div className="max-w-7xl mx-auto">
-
                 <div className="mb-8">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900 mb-2">Tất cả bài viết</h1>
-                            <p className="text-gray-600">Quản lý và theo dõi tất cả nội dung</p>
+                            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                                Tất cả bài viết
+                            </h1>
+                            <p className="text-gray-600">
+                                Quản lý và theo dõi tất cả nội dung
+                            </p>
                         </div>
-                        <div className="flex items-center space-x-3">
+
+                        {/* <div className="flex items-center space-x-3">
                             <button className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2">
                                 <Filter className="w-4 h-4" />
                                 <span>Bộ lọc</span>
@@ -129,26 +117,60 @@ const AllArticles = () => {
                                 <FileText className="w-4 h-4" />
                                 <span>Thêm bài viết</span>
                             </button>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
 
                 <FilterBar
                     searchTerm={searchTerm}
                     onSearchChange={setSearchTerm}
-                    selectOptions={categories}
-                    selectValue={categoryFilter}
-                    onSelectChange={setCategoryFilter}
-                />
-                <ArticlesList articles={filteredArticles} onDelete={handleDelete} />
-
-                <Pagination
-                    currentPage={1}
-                    totalPages={5}
-                    onPageChange={(page) => console.log("Chuyển sang trang:", page)}
+                // selectOptions={categories}
+                // selectValue={categoryFilter}
+                // onSelectChange={setCategoryFilter}
                 />
 
+                {loading ? (
+                    <SimpleLoading />
+                ) : (
+                    <>
+                        <ArticlesList
+                            articles={articles}
+                            onDelete={handleDelete}
+                            onStatusChange={handleStatusChange}
+                            loading={loading}
+                        />
+
+                        {pagination.totalPages > 1 && (
+                            <Pagination
+                                currentPage={pagination.currentPage}
+                                totalPages={pagination.totalPages}
+                                onPageChange={handlePageChange}
+                            />
+                        )}
+                    </>
+                )}
             </div>
+
+            <Alert
+                type={alert.type}
+                title={alert.title}
+                message={alert.message}
+                isVisible={alert.isVisible}
+                onClose={hideAlert}
+                autoClose={true}
+                duration={3000}
+            />
+
+            <ConfirmDialog
+                isVisible={confirmDialog.isVisible}
+                title={confirmDialog.title}
+                message={confirmDialog.message}
+                confirmText={confirmDialog.confirmText}
+                cancelText={confirmDialog.cancelText}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+                type={confirmDialog.type}
+            />
         </div>
     );
 };

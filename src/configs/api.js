@@ -17,6 +17,7 @@ export const ENDPOINTS = {
         GET_ALL_TAGS: '/content/tag',
         GET_ALL_ARTICLE_BY_CATEGORY: (categorySlug) => `/content/article/all/${categorySlug}`,
         SEND_QUESTION: '/ai/ask',
+
     },
     ADMIN: {
         CREATE_CATEGORY: '/content/category/create',
@@ -27,10 +28,14 @@ export const ENDPOINTS = {
 
         CREATE_ARTICLE: '/content/article/create',
         DELETE_ARTICLE: articleId => `/content/article/delete/${articleId}`,
+        GET_ALL_ARTICLE: '/content/article/all-status',
+        UPDATE_ARTICLE: articleId => `/content/article/update/${articleId}`,
+        UPDATE_ARTICLE_STATUS: articleId => `/content/article/update-status/${articleId}`,
 
-        APPROVE_COMMENT: commentId => `/content/comment/approve/${commentId}`,
-        DELETE_COMMENT: commentId => `/content/comment/delete/${commentId}`,
-        REJECT_COMMENT: commentId => `/content/comment/reject/${commentId}`,
+        APPROVE_COMMENT: commentId => `/comment/approve/${commentId}`,
+        DELETE_COMMENT: commentId => `/comment/delete/${commentId}`,
+        REJECT_COMMENT: commentId => `/comment/reject/${commentId}`,
+        GET_ALL_COMMENTS: '/comment/all',
 
     }
 };

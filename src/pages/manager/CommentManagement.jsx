@@ -1,101 +1,125 @@
-import React, { useState } from "react";
-import { MessageSquare, CheckCircle, Flag, Clock } from "lucide-react";
-import StatsCard from "../../components/manager/StatsCard";
+import React, { useState, useEffect } from "react";
 import FilterBar from "../../components/manager/FilterBar";
 import ListComment from "../../components/manager/comment/ListComment";
+import Alert from "../../components/Alert";
+import ConfirmDialog from "../../components/ConfirmDialog";
+import { Error } from "../../components/Error";
+import SimpleLoading from "../../components/SimpleLoading";
+
+import useComment from "../../hooks/useComment";
+import useAlert from "../../hooks/useAlert";
+import useConfirmDialog from "../../hooks/useConfirmDialog";
 
 const CommentManagement = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedStatus, setSelectedStatus] = useState("all");
     const [selectedArticle, setSelectedArticle] = useState("all");
 
-    // Mock comments
-    const [comments, setComments] = useState([
-        {
-            id: 1,
-            content: "Bài viết rất hay và bổ ích!",
-            author: "Nguyễn Văn An",
-            authorEmail: "nguyenvanan@gmail.com",
-            articleTitle: "Microsoft quisque at ipsum vel orci eleifend ultrices",
-            articleId: 1,
-            status: "approved",
-            createdAt: "26/07/2025 14:30",
-            likes: 12,
-            replies: 3,
-            reported: false
-        },
-        {
-            id: 2,
-            content: "Tôi không đồng ý với quan điểm này.",
-            author: "Trần Thị Bình",
-            authorEmail: "tranthibinh@gmail.com",
-            articleTitle: "London ipsum dolor sit amet",
-            articleId: 2,
-            status: "pending",
-            createdAt: "25/07/2025 09:15",
-            likes: 2,
-            replies: 1,
-            reported: true
-        }
-    ]);
+    const {
+        comments,
+        loading,
+        error,
+        loadComments,
+        deleteComment,
+        approveComment,
+        rejectComment
+    } = useComment();
+
+    console.log("comment data" + comments);
+
+
+    const { alert, showSuccess, showError, hideAlert } = useAlert();
+
+    const {
+        confirmDialog,
+        handleConfirm,
+        handleCancel,
+        showDeleteConfirm,
+        showWarningConfirm
+    } = useConfirmDialog();
+
+    useEffect(() => {
+        loadComments();
+    }, []);
 
     const statuses = [
-        { value: 'approved', label: 'Đã duyệt' },
-        { value: 'rejected', label: 'Từ chối' },
-        { value: 'pending', label: 'Chờ duyệt' }
+        { value: 'all', label: 'Tất cả' },
+        { value: 'APPROVED', label: 'Đã duyệt' },
+        { value: 'REJECTED', label: 'Từ chối' },
+        { value: 'PENDING', label: 'Chờ duyệt' }
     ];
 
-    const statsData = [
-        {
-            title: "Tổng bình luận",
-            value: '2,847',
-            icon: MessageSquare,
-            color: 'from-blue-500 to-blue-600',
-            bgColor: 'bg-blue-50',
-            iconColor: 'text-blue-600'
-        },
-        {
-            title: "Chờ duyệt",
-            value: '2,847',
-            icon: Clock,
-            color: 'from-blue-500 to-blue-600',
-            bgColor: 'bg-blue-50',
-            iconColor: 'text-blue-600'
-        },
-        {
-            title: "Đã duyệt",
-            value: '2,847',
-            icon: CheckCircle,
-            color: 'from-blue-500 to-blue-600',
-            bgColor: 'bg-blue-50',
-            iconColor: 'text-blue-600'
-        },
-        {
-            title: "Bị báo cáo",
-            value: '2,847',
-            icon: Flag,
-            color: 'from-blue-500 to-blue-600',
-            bgColor: 'bg-blue-50',
-            iconColor: 'text-blue-600'
+
+    const handleApproveAction = async (commentId) => {
+        const result = await approveComment(commentId);
+
+        if (result.success) {
+            showSuccess('Thành công', result.message);
+        } else {
+            showError('Lỗi', result.message);
         }
-    ];
+    };
 
-    const handleApprove = (id) =>
-        setComments(comments.map(c => c.id === id ? { ...c, status: "approved" } : c));
+    const handleApprove = (commentId) => {
+        showWarningConfirm(
+            'Xác nhận phê duyệt',
+            'Bạn có chắc chắn muốn phê duyệt bình luận này?',
+            handleApproveAction,
+            commentId
+        );
+    };
 
-    const handleReject = (id) =>
-        setComments(comments.map(c => c.id === id ? { ...c, status: "rejected" } : c));
+    const handleRejectAction = async (commentId) => {
+        const result = await rejectComment(commentId);
 
-    const handleDelete = (id) =>
-        setComments(comments.filter(c => c.id !== id));
+        if (result.success) {
+            showSuccess('Thành công', result.message);
+        } else {
+            showError('Lỗi', result.message);
+        }
+    };
+
+    const handleReject = (commentId) => {
+        showWarningConfirm(
+            'Xác nhận từ chối',
+            'Bạn có chắc chắn muốn từ chối bình luận này?',
+            handleRejectAction,
+            commentId
+        );
+    };
+
+    const handleDeleteAction = async (commentId) => {
+        const result = await deleteComment(commentId);
+
+        if (result.success) {
+            showSuccess('Thành công', result.message);
+        } else {
+            showError('Lỗi', result.message);
+        }
+    };
+
+    const handleDelete = (commentId, content) => {
+        showDeleteConfirm(
+            `"${content?.substring(0, 50)}..."` || 'bình luận này',
+            handleDeleteAction,
+            commentId
+        );
+    };
+
+    const handleRetry = () => {
+        loadComments();
+    };
+
+    if (error && comments.length === 0) {
+        return <Error message={error} onRetry={handleRetry} />;
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 p-6">
             <div className="max-w-7xl mx-auto space-y-6">
-                <h1 className="text-3xl font-bold">Quản lý bình luận</h1>
-
-                <StatsCard statsData={statsData} />
-
+                <div className="flex items-center justify-between">
+                    <h1 className="text-3xl font-bold">Quản lý bình luận</h1>
+                </div>
 
                 <FilterBar
                     searchTerm={searchTerm}
@@ -105,18 +129,43 @@ const CommentManagement = () => {
                     onSelectChange={setSelectedStatus}
                 />
 
-                <ListComment
-                    comments={comments}
-                    searchTerm={searchTerm}
-                    selectedStatus={selectedStatus}
-                    selectedArticle={selectedArticle}
-                    onApprove={handleApprove}
-                    onReject={handleReject}
-                    onDelete={handleDelete}
+                {loading ? (
+                    <SimpleLoading />
+                ) : (
+                    <ListComment
+                        comments={comments}
+                        searchTerm={searchTerm}
+                        selectedStatus={selectedStatus}
+                        selectedArticle={selectedArticle}
+                        onApprove={handleApprove}
+                        onReject={handleReject}
+                        onDelete={handleDelete}
+                        loading={loading}
+                    />
+                )}
+
+                {/* Alert Component */}
+                <Alert
+                    type={alert.type}
+                    title={alert.title}
+                    message={alert.message}
+                    isVisible={alert.isVisible}
+                    onClose={hideAlert}
+                    autoClose={true}
+                    duration={3000}
                 />
 
-
-
+                {/* Confirm Dialog */}
+                <ConfirmDialog
+                    isVisible={confirmDialog.isVisible}
+                    title={confirmDialog.title}
+                    message={confirmDialog.message}
+                    confirmText={confirmDialog.confirmText}
+                    cancelText={confirmDialog.cancelText}
+                    onConfirm={handleConfirm}
+                    onCancel={handleCancel}
+                    type={confirmDialog.type}
+                />
             </div>
         </div>
     );
