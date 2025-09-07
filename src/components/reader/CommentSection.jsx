@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 
-const CommentSection = ({ articleId, comments, onSubmitComment }) => {
+const CommentSection = ({ articleId, comments, onSubmitComment, showSuccess, showError }) => {
     const { user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const [commentContent, setCommentContent] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleLoginRedirect = () => {
         navigate("/login", {
@@ -14,20 +15,37 @@ const CommentSection = ({ articleId, comments, onSubmitComment }) => {
         });
     };
 
-    const handleSubmitComment = () => {
+    const handleSubmitComment = async () => {
         if (!user) {
             handleLoginRedirect();
             return;
         }
+        if (!commentContent.trim()) {
+            showError("Lỗi", "Vui lòng nhập nội dung bình luận");
+            return;
+        }
+
+        setIsSubmitting(true);
 
         const commentData = {
             articleId: articleId,
-            content: commentContent,
+            content: commentContent.trim(),
         };
 
-        console.log("Bình luận: ", commentData);
-        onSubmitComment(commentData);
-        setCommentContent("");
+        try {
+            const res = await onSubmitComment(commentData);
+            if (res.success) {
+                setCommentContent("");
+                showSuccess("Gửi bình luận thành công!", res.message);
+            }
+            else {
+                showError("Lỗi gửi bình luận", res.message);
+            }
+        } catch (error) {
+            showError("Lỗi", "Có lỗi xảy ra khi gửi bình luận");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -60,16 +78,20 @@ const CommentSection = ({ articleId, comments, onSubmitComment }) => {
                             rows={4}
                             placeholder="Nội dung bình luận"
                             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                            disabled={isSubmitting}
                         />
                         <button
                             onClick={handleSubmitComment}
-                            className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-colors cursor-pointer whitespace-nowrap">
-                            Gửi bình luận
+                            disabled={isSubmitting || !commentContent.trim()}
+                            className={`px-6 py-2 rounded-md transition-colors cursor-pointer whitespace-nowrap ${isSubmitting || !commentContent.trim()
+                                ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                                : 'bg-green-600 text-white hover:bg-green-700'
+                                }`}>
+                            {isSubmitting ? 'Đang gửi...' : 'Gửi bình luận'}
                         </button>
                     </div>
                 </div>
             )}
-
             {/* Comments List */}
             <div className="space-y-6">
                 {comments?.result?.data?.map((comment) => (

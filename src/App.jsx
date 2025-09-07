@@ -22,6 +22,7 @@ import ErrorBoundary from './components/ErrorBoundary'
 import UserManagement from './pages/manager/UserManagement'
 import CommentManagement from './pages/manager/CommentManagement'
 import SystemSettings from './pages/manager/SystemSettings'
+import Analytics from './pages/manager/Analytics'
 
 
 function App() {
@@ -60,6 +61,7 @@ function App() {
               <Route path="/manager/users" element={<SuperAdminRoute element={<UserManagement />} />} />
               <Route path="/manager/settings" element={<SuperAdminRoute element={<SystemSettings />} />} />
               <Route path="/manager/comments" element={<CommentManagement />} />
+              <Route path="/manager/analytics" element={<Analytics />} />
             </Route>
           </Routes>
         </BrowserRouter>

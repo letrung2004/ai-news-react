@@ -9,18 +9,25 @@ import ArticleDetail from "../../components/reader/ArticleDetail";
 import CommentSection from "../../components/reader/CommentSection";
 import { Error } from "../../components/Error";
 import Chatbot from "../../components/reader/Chatbot";
+import useComment from "../../hooks/useComment";
+import useAlert from "../../hooks/useAlert";
+import Alert from "../../components/Alert";
 
 const ArticlePage = () => {
     const { articleSlug } = useParams();
-    const { detailArticle, loading, error, loadDetailArticles, comments, handleCreateComment } = usePublicArticles();
-    console.log("Detail Article:", detailArticle?.result);
+    const { detailArticle, loading, error, loadDetailArticles, comments } = usePublicArticles();
+    const { handleCreateComment } = useComment();
+    const { alert, showSuccess, showError, hideAlert } = useAlert();
+
+
+
+
     useEffect(() => {
         if (articleSlug) {
             loadDetailArticles(articleSlug);
         }
     }, [articleSlug]);
 
-    // Xử lý error
     if (error) return <Error message={error} onRetry={() => window.location.reload()} />;
 
     return (
@@ -55,19 +62,30 @@ const ArticlePage = () => {
                         </div>
                     </div>
 
-                    {/* Comment Section - Full Width */}
+
                     <div className="grid grid-cols-12 gap-8 mt-8">
                         <div className="col-span-8">
                             <CommentSection
                                 articleId={detailArticle.result.id}
                                 comments={comments}
                                 onSubmitComment={handleCreateComment}
+                                showSuccess={showSuccess}
+                                showError={showError}
                             />
                         </div>
                     </div>
                 </main>
             )}
             <Chatbot articleId={detailArticle?.result.id} />
+            <Alert
+                type={alert.type}
+                title={alert.title}
+                message={alert.message}
+                isVisible={alert.isVisible}
+                onClose={hideAlert}
+                autoClose={true}
+                duration={3000}
+            />
         </>
     );
 };

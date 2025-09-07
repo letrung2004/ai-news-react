@@ -37,5 +37,7 @@ export const ENDPOINTS = {
         REJECT_COMMENT: commentId => `/comment/reject/${commentId}`,
         GET_ALL_COMMENTS: '/comment/all',
 
+        GET_ALL_USER: '/identity/users',
+
     }
 };

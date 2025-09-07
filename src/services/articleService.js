@@ -1,6 +1,5 @@
 import { AUTH_REQUEST, API } from '../configs/axios';
 import { ENDPOINTS } from '../configs/api';
-import { tokenStorage } from '../utils/storage';
 
 export const articleService = {
 
@@ -60,18 +59,5 @@ export const articleService = {
         const response = await API.get(`${ENDPOINTS.NEWS.GET_ALL_ARTICLE_BY_CATEGORY(categorySlug)}?page=${page}`);
         return response.data.result;
     },
-
-    // get all article comment
-    getAllCommentByArticle: async (articleId) => {
-        const response = await API.get(ENDPOINTS.NEWS.GET_COMMENTS(articleId));
-        return response.data;
-    },
-
-    //create comment
-    createCommentArticle: async (commentData) => {
-        const response = await AUTH_REQUEST.post(ENDPOINTS.NEWS.CREATE_COMMENT, commentData);
-        return response.data;
-    }
-
 
 };

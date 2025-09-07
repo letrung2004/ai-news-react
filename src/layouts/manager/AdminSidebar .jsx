@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ChevronDown, ChevronRight, BarChart3, FileText, Folder, Users, MessageSquare, Settings, Plus, List, Tag } from "lucide-react";
+import { ChevronDown, BarChart3, FileText, Folder, Users, MessageSquare, Settings, Plus, List, Tag, BarChart2 } from "lucide-react";
 import { useRole } from "../../hooks/useRole";
 
 const AdminSidebar = () => {
@@ -71,6 +71,14 @@ const AdminSidebar = () => {
             requiredRoles: ['ADMIN', 'EDITOR']
         },
         {
+            id: 'analytics',
+            label: 'Báo cáo thống kê',
+            icon: BarChart2,
+            path: '/manager/analytics',
+            hasSubmenu: false,
+            requiredRoles: ['ADMIN', 'EDITOR']
+        },
+        {
             id: 'settings',
             label: 'Cài đặt hệ thống',
             icon: Settings,
@@ -80,7 +88,6 @@ const AdminSidebar = () => {
         }
     ];
 
-    // Filter items dựa trên role của user
     const getFilteredMenuItems = () => {
         return sidebarItems.filter(item => {
 
@@ -185,9 +192,7 @@ const AdminSidebar = () => {
 
                     return (
                         <div key={item.id} className="mb-1">
-                            {/* Main menu item */}
                             {item.hasSubmenu ? (
-                                // Menu có submenu - dùng button để toggle
                                 <button
                                     onClick={() => handleMenuClick(item)}
                                     className={`w-full flex items-center justify-between px-4 py-3 text-left transition-all duration-200 rounded-lg group relative overflow-hidden
@@ -235,14 +240,12 @@ const AdminSidebar = () => {
                                         <span className="font-medium text-sm">{item.label}</span>
                                     </div>
 
-                                    {/* Active indicator */}
                                     {isCurrentPath(item.path) && (
                                         <div className="absolute left-0 top-0 w-1 h-full bg-white rounded-r-full"></div>
                                     )}
                                 </Link>
                             )}
 
-                            {/* Submenu */}
                             {item.hasSubmenu && (
                                 <div className={`mt-1 ml-4 space-y-1 overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
                                     }`}>
@@ -271,7 +274,6 @@ const AdminSidebar = () => {
                                                     </div>
                                                     <span className="font-medium">{subItem.label}</span>
 
-                                                    {/* Sub-item active indicator */}
                                                     {isSubActive && (
                                                         <div className="ml-auto w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
                                                     )}
@@ -286,7 +288,6 @@ const AdminSidebar = () => {
                 })}
             </nav>
 
-            {/* Footer */}
             <div className="absolute bottom-4 left-3 right-3">
                 <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-3 border border-green-100">
                     <div className="text-xs text-gray-600 text-center">

@@ -36,7 +36,7 @@ const useComment = () => {
 
             return {
                 success: true,
-                message: "Bình luận đã được gửi thành công!",
+                message: "Bình luận đã được gửi thành công! Đang chờ xác nhận!",
                 data: result.data
             };
         } catch (err) {

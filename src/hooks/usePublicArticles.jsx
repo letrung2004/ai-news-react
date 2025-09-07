@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { articleService } from "../services/articleService";
+import { commentService } from "../services/commentService";
 
 const usePublicArticles = (categorySlug) => {
     const [articles, setArticles] = useState([]);
@@ -122,7 +123,7 @@ const usePublicArticles = (categorySlug) => {
         try {
             setLoading(true);
             setError(null);
-            const response = await articleService.getAllCommentByArticle(articleId);
+            const response = await commentService.getAllCommentByArticle(articleId);
             setComments(response);
 
         } catch (err) {
@@ -134,25 +135,6 @@ const usePublicArticles = (categorySlug) => {
         }
     };
 
-    const handleCreateComment = async (commentData) => {
-        if (!commentData.content || !commentData.articleId) {
-            console.error("Bình luận không hợp lệ");
-            return;
-        }
-
-        try {
-            setLoading(true);
-            setError(null);
-            await articleService.createCommentArticle(commentData);
-            const response = await articleService.getAllCommentByArticle(commentData.articleId);
-            setComments(response);
-        } catch (err) {
-            console.error('Error submitting comment:', err);
-            setError(err.message || 'Có lỗi xảy ra khi gửi bình luận');
-        } finally {
-            setLoading(false);
-        }
-    };
 
     // Reset pagination when category changes
     const resetPagination = () => {
@@ -189,7 +171,6 @@ const usePublicArticles = (categorySlug) => {
         loadArticlesByCategory,
         loadCommentArticle,
         setComments,
-        handleCreateComment
     };
 };
 

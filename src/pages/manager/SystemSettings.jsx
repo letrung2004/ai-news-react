@@ -457,69 +457,22 @@ const SystemSettings = () => {
     };
 
     const handleSaveRole = (roleData) => {
-        if (selectedRole) {
-            setRoles(roles.map(role =>
-                role.id === selectedRole.id
-                    ? { ...role, ...roleData }
-                    : role
-            ));
-        } else {
-            const newRole = {
-                ...roleData,
-                id: Math.max(...roles.map(r => r.id)) + 1,
-                userCount: 0,
-                isSystem: false,
-                createdAt: new Date().toLocaleDateString('vi-VN')
-            };
-            setRoles([...roles, newRole]);
-        }
-        setShowRoleModal(false);
-        setSelectedRole(null);
+        alert('Cài đặt đã được lưu thành công!');
     };
 
     const handleSavePermission = (permissionData) => {
-        if (selectedPermission) {
-            setPermissions(permissions.map(permission =>
-                permission.id === selectedPermission.id
-                    ? { ...permission, ...permissionData }
-                    : permission
-            ));
-        } else {
-            const newPermission = {
-                ...permissionData,
-                id: Math.max(...permissions.map(p => p.id)) + 1,
-                isSystem: false
-            };
-            setPermissions([...permissions, newPermission]);
-        }
-        setShowPermissionModal(false);
-        setSelectedPermission(null);
+        alert('Cài đặt đã được lưu thành công!');
     };
 
     const handleDeleteRole = (roleId) => {
-        const role = roles.find(r => r.id === roleId);
-        if (role.isSystem) {
-            alert('Không thể xóa vai trò hệ thống');
-            return;
-        }
-        if (window.confirm('Bạn có chắc chắn muốn xóa vai trò này?')) {
-            setRoles(roles.filter(role => role.id !== roleId));
-        }
+        alert('Cài đặt đã được lưu thành công!');
     };
 
     const handleDeletePermission = (permissionId) => {
-        const permission = permissions.find(p => p.id === permissionId);
-        if (permission.isSystem) {
-            alert('Không thể xóa quyền hạn hệ thống');
-            return;
-        }
-        if (window.confirm('Bạn có chắc chắn muốn xóa quyền hạn này?')) {
-            setPermissions(permissions.filter(permission => permission.id !== permissionId));
-        }
+        alert('Cài đặt đã được lưu thành công!');
     };
 
     const handleSaveSettings = () => {
-        // In a real app, this would save to backend
         alert('Cài đặt đã được lưu thành công!');
     };
 
@@ -528,7 +481,6 @@ const SystemSettings = () => {
         { id: "roles", label: "Vai trò", icon: Crown },
         { id: "permissions", label: "Quyền hạn", icon: Key },
         { id: "security", label: "Bảo mật", icon: Lock },
-        { id: "notifications", label: "Thông báo", icon: Bell }
     ];
 
     return (
@@ -561,8 +513,8 @@ const SystemSettings = () => {
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
                                     className={`flex items-center space-x-2 px-6 py-4 border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.id
-                                            ? 'border-green-500 text-green-600 bg-green-50'
-                                            : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                                        ? 'border-green-500 text-green-600 bg-green-50'
+                                        : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                                         }`}
                                 >
                                     <IconComponent className="w-4 h-4" />
@@ -601,25 +553,7 @@ const SystemSettings = () => {
                                         />
                                     </div>
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">URL website</label>
-                                        <input
-                                            type="url"
-                                            value={generalSettings.siteUrl}
-                                            onChange={(e) => setGeneralSettings({ ...generalSettings, siteUrl: e.target.value })}
-                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                        />
-                                    </div>
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Email quản trị</label>
-                                        <input
-                                            type="email"
-                                            value={generalSettings.adminEmail}
-                                            onChange={(e) => setGeneralSettings({ ...generalSettings, adminEmail: e.target.value })}
-                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                        />
-                                    </div>
                                 </div>
 
                                 <div className="space-y-4">
@@ -648,49 +582,7 @@ const SystemSettings = () => {
                                         </select>
                                     </div>
 
-                                    <div className="space-y-3">
-                                        <h4 className="font-medium text-gray-900">Cài đặt chức năng</h4>
 
-                                        <label className="flex items-center space-x-3 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                checked={generalSettings.allowRegistration}
-                                                onChange={(e) => setGeneralSettings({ ...generalSettings, allowRegistration: e.target.checked })}
-                                                className="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                                            />
-                                            <span className="text-sm text-gray-700">Cho phép đăng ký tài khoản</span>
-                                        </label>
-
-                                        <label className="flex items-center space-x-3 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                checked={generalSettings.requireEmailVerification}
-                                                onChange={(e) => setGeneralSettings({ ...generalSettings, requireEmailVerification: e.target.checked })}
-                                                className="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                                            />
-                                            <span className="text-sm text-gray-700">Yêu cầu xác thực email</span>
-                                        </label>
-
-                                        <label className="flex items-center space-x-3 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                checked={generalSettings.moderateComments}
-                                                onChange={(e) => setGeneralSettings({ ...generalSettings, moderateComments: e.target.checked })}
-                                                className="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                                            />
-                                            <span className="text-sm text-gray-700">Duyệt bình luận trước khi hiển thị</span>
-                                        </label>
-
-                                        <label className="flex items-center space-x-3 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                checked={generalSettings.enableNotifications}
-                                                onChange={(e) => setGeneralSettings({ ...generalSettings, enableNotifications: e.target.checked })}
-                                                className="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                                            />
-                                            <span className="text-sm text-gray-700">Bật thông báo hệ thống</span>
-                                        </label>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -966,130 +858,7 @@ const SystemSettings = () => {
                         </div>
                     )}
 
-                    {activeTab === "notifications" && (
-                        <div className="p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-6">Cài đặt thông báo</h3>
 
-                            <div className="space-y-6">
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                    <div className="space-y-4">
-                                        <h4 className="font-medium text-gray-900">Thông báo email</h4>
-
-                                        <div className="space-y-3">
-                                            <label className="flex items-center space-x-3 cursor-pointer">
-                                                <input
-                                                    type="checkbox"
-                                                    defaultChecked
-                                                    className="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                                                />
-                                                <span className="text-sm text-gray-700">Người dùng mới đăng ký</span>
-                                            </label>
-
-                                            <label className="flex items-center space-x-3 cursor-pointer">
-                                                <input
-                                                    type="checkbox"
-                                                    defaultChecked
-                                                    className="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                                                />
-                                                <span className="text-sm text-gray-700">Bài viết mới được tạo</span>
-                                            </label>
-
-                                            <label className="flex items-center space-x-3 cursor-pointer">
-                                                <input
-                                                    type="checkbox"
-                                                    defaultChecked
-                                                    className="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                                                />
-                                                <span className="text-sm text-gray-700">Bình luận cần duyệt</span>
-                                            </label>
-
-                                            <label className="flex items-center space-x-3 cursor-pointer">
-                                                <input
-                                                    type="checkbox"
-                                                    className="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                                                />
-                                                <span className="text-sm text-gray-700">Báo cáo lỗi hệ thống</span>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <h4 className="font-medium text-gray-900">Thông báo trong app</h4>
-
-                                        <div className="space-y-3">
-                                            <label className="flex items-center space-x-3 cursor-pointer">
-                                                <input
-                                                    type="checkbox"
-                                                    defaultChecked
-                                                    className="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                                                />
-                                                <span className="text-sm text-gray-700">Hoạt động người dùng</span>
-                                            </label>
-
-                                            <label className="flex items-center space-x-3 cursor-pointer">
-                                                <input
-                                                    type="checkbox"
-                                                    defaultChecked
-                                                    className="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                                                />
-                                                <span className="text-sm text-gray-700">Cập nhật hệ thống</span>
-                                            </label>
-
-                                            <label className="flex items-center space-x-3 cursor-pointer">
-                                                <input
-                                                    type="checkbox"
-                                                    className="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                                                />
-                                                <span className="text-sm text-gray-700">Thông báo bảo trì</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="pt-6 border-t border-gray-200">
-                                    <h4 className="font-medium text-gray-900 mb-4">Cấu hình SMTP</h4>
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">SMTP Host</label>
-                                            <input
-                                                type="text"
-                                                placeholder="smtp.gmail.com"
-                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">SMTP Port</label>
-                                            <input
-                                                type="number"
-                                                placeholder="587"
-                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
-                                            <input
-                                                type="text"
-                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                                            <input
-                                                type="password"
-                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-4">
-                                        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
-                                            Kiểm tra kết nối
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
                 </div>
 
                 {/* Modals */}
