@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { Eye, Edit, Trash2, MoreVertical, User, Calendar, Eye as EyeIcon, FileText, CheckCircle, XCircle, Clock, Tag, Archive } from "lucide-react";
 import SimpleLoading from "../../SimpleLoading";
 
@@ -38,6 +39,8 @@ const ArticlesList = ({ articles, onDelete, onStatusChange, loading }) => {
         if (authors.length === 1) return authors[0].name || authors[0];
         return `${authors[0].name || authors[0]} và ${authors.length - 1} người khác`;
     };
+
+
 
     if (loading) {
         return (
@@ -128,9 +131,12 @@ const ArticlesList = ({ articles, onDelete, onStatusChange, loading }) => {
                                                     <Eye className="w-4 h-4" />
                                                 </button> */}
 
-                                                <button className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
-                                                    <Edit className="w-4 h-4" />
-                                                </button>
+                                                <Link to={`/manager/articles/update/${article.slug}`}>
+                                                    <button className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
+                                                        <Edit className="w-4 h-4" />
+                                                    </button>
+                                                </Link>
+
                                                 <button
                                                     onClick={() => onDelete(article.id, article.title)}
                                                     className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"

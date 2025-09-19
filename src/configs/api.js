@@ -38,6 +38,8 @@ export const ENDPOINTS = {
         GET_ALL_COMMENTS: '/comment/all',
 
         GET_ALL_USER: '/identity/users',
+        GET_USER: userId => `/identity/users/${userId}`,
+        UPDATE_USER: userId => `/identity/users/${userId}`,
 
     }
 };

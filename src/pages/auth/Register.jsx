@@ -8,34 +8,41 @@ const Register = () => {
         {
             label: "Họ của bạn",
             type: "text",
-            field: "lastName"
+            field: "lastName",
+            column: "left"
         },
         {
             label: "Tên của bạn",
             type: "text",
-            field: "firstName"
+            field: "firstName",
+            column: "right"
         },
         {
             label: "Email",
             type: "email",
-            field: "email"
+            field: "email",
+            column: "left"
         },
         {
             label: "Tên đăng nhập",
             type: "text",
-            field: "username"
-        }, {
+            field: "username",
+            column: "right"
+        },
+        {
             label: "Mật khẩu",
             type: "password",
-            field: "password"
+            field: "password",
+            column: "left"
         },
         {
             label: "Xác nhận mật khẩu",
             type: "password",
-            field: "confirm"
+            field: "confirm",
+            column: "right"
         }
-
     ];
+
     const [user, setUser] = useState({});
     const { register, errors, loading, setErrors } = useRegister();
     const {
@@ -52,7 +59,6 @@ const Register = () => {
         setErrors((prev) => ({ ...prev, [field]: "" }));
     };
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         await register(user);
@@ -66,10 +72,34 @@ const Register = () => {
         handleUrlErrors();
     }, [handleUrlErrors]);
 
+    const leftFields = info.filter(field => field.column === "left");
+    const rightFields = info.filter(field => field.column === "right");
+
+    const renderField = (f) => (
+        <div key={f.field} className="space-y-1">
+            <label className="block text-sm font-medium text-gray-700">
+                {f.label}
+            </label>
+            <input
+                type={f.type}
+                autoComplete={f.field === 'password' ? 'current-password' : 'username'}
+                value={user[f.field] || ''}
+                onChange={(e) => handleChange(e.target.value, f.field)}
+                placeholder={f.label}
+                className={`w-full px-4 py-3 rounded-lg border text-sm transition focus:outline-none focus:ring-2 ${errors[f.field]
+                    ? 'border-red-400 bg-red-50 focus:ring-red-300'
+                    : 'border-gray-300 bg-gray-50 focus:ring-green-400'
+                    }`}
+            />
+            {errors[f.field] && (
+                <span className="text-red-500 text-xs">{errors[f.field]}</span>
+            )}
+        </div>
+    );
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center px-4">
-            <div className="max-w-6xl w-full flex flex-col md:flex-row items-center gap-12 py-12">
+            <div className="max-w-7xl w-full flex flex-col lg:flex-row items-center gap-12 py-12">
                 {/* Left branding */}
                 <div className="flex-1 text-center">
                     <h1 className="text-5xl font-extrabold mb-4 tracking-tight">
@@ -83,7 +113,7 @@ const Register = () => {
 
                 {/* Form card */}
                 <div className="flex-1 flex justify-center">
-                    <div className="bg-white p-10 rounded-2xl shadow-lg w-full max-w-md">
+                    <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-2xl">
                         <h2 className="text-2xl font-bold text-gray-800 text-center mb-1">
                             Đăng ký
                         </h2>
@@ -97,32 +127,22 @@ const Register = () => {
                             </div>
                         )}
 
-                        <form onSubmit={handleSubmit} className="space-y-2">
-                            {info.map((f) => (
-                                <div key={f.field} className="space-y-1">
-                                    <label className="block text-sm font-medium text-gray-700">
-                                        {f.label}
-                                    </label>
-                                    <input
-                                        type={f.type}
-                                        autoComplete={f.field === 'password' ? 'current-password' : 'username'}
-                                        value={user[f.field]}
-                                        onChange={(e) => handleChange(e.target.value, f.field)}
-                                        placeholder={f.label}
-                                        className={`w-full px-4 py-3 rounded-lg border text-sm transition focus:outline-none focus:ring-2 ${errors[f.field]
-                                            ? 'border-red-400 bg-red-50 focus:ring-red-300'
-                                            : 'border-gray-300 bg-gray-50 focus:ring-green-400'
-                                            }`}
-                                    />
-                                    {errors[f.field] && (
-                                        <span className="text-red-500 text-xs">{errors[f.field]}</span>
-                                    )}
+                        <form onSubmit={handleSubmit} className="space-y-4">
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                                <div className="space-y-4">
+                                    {leftFields.map(renderField)}
                                 </div>
-                            ))}
+
+                                <div className="space-y-4">
+                                    {rightFields.map(renderField)}
+                                </div>
+                            </div>
 
                             <button
                                 type="submit"
-                                className={`w-full py-3 rounded-lg text-white font-semibold transition relative ${loading
+                                className={`w-full py-3 rounded-lg text-white font-semibold transition relative mt-6 ${loading
                                     ? 'bg-green-400 opacity-70 cursor-not-allowed'
                                     : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700'
                                     }`}
@@ -131,10 +151,10 @@ const Register = () => {
                                 {loading ? (
                                     <span className="flex items-center justify-center gap-2">
                                         <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                                        Đang đăng nhập...
+                                        Đang đăng ký...
                                     </span>
                                 ) : (
-                                    'Đăng nhập'
+                                    'Đăng ký'
                                 )}
                             </button>
                         </form>
@@ -145,7 +165,7 @@ const Register = () => {
                                 <div className="w-full border-t border-gray-300"></div>
                             </div>
                             <div className="relative text-center">
-                                <span className="bg-white px-4 text-sm text-gray-500">Hoặc đăng nhập với</span>
+                                <span className="bg-white px-4 text-sm text-gray-500">Hoặc đăng ký với</span>
                             </div>
                         </div>
 
@@ -153,7 +173,7 @@ const Register = () => {
                         <div className="flex gap-4 mb-6">
                             <button
                                 onClick={handleOutBoundLogin}
-                                className="flex-1 flex items-center justify-center gap-2 border border-gray-300 py-2 rounded-lg text-sm font-medium hover:border-blue-500"
+                                className="flex-1 flex items-center justify-center gap-2 border border-gray-300 py-3 rounded-lg text-sm font-medium hover:border-blue-500 transition-colors"
                             >
                                 <img
                                     src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg"
@@ -162,7 +182,7 @@ const Register = () => {
                                 />
                                 Google
                             </button>
-                            <button className="flex-1 flex items-center justify-center gap-2 border border-gray-300 py-2 rounded-lg text-sm font-medium hover:border-blue-700">
+                            <button className="flex-1 flex items-center justify-center gap-2 border border-gray-300 py-3 rounded-lg text-sm font-medium hover:border-blue-700 transition-colors">
                                 <i className="fab fa-facebook text-blue-600 text-base"></i>
                                 Facebook
                             </button>
@@ -179,7 +199,6 @@ const Register = () => {
             </div>
         </div>
     );
-
 };
 
 export default Register;

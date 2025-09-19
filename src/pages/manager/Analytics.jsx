@@ -1,30 +1,13 @@
 import React, { useState } from 'react';
-import {
-    Users,
-    FileText,
-    Eye,
-    MessageSquare,
-    TrendingUp,
-    TrendingDown,
-    Calendar,
-    Clock,
-    Activity,
-    Globe,
-    Target,
-    Award,
-    BarChart3,
-    PieChart,
-    Filter,
-    Download
-} from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Cell, AreaChart, Area, Pie } from 'recharts';
+import { Users, FileText, Eye, MessageSquare, Award, BarChart3, PieChart, Download } from 'lucide-react';
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Cell, AreaChart, Area, Pie } from 'recharts';
 import StatsCard from '../../components/manager/StatsCard';
+import TopArticleTable from '../../components/manager/TopArticleTable';
 
 const Analytics = () => {
     const [selectedPeriod, setSelectedPeriod] = useState('7days');
     const [selectedCategory, setSelectedCategory] = useState('all');
 
-    // Mock data
     const overviewStats = [
         {
             title: 'Tổng bài viết',
@@ -92,12 +75,57 @@ const Analytics = () => {
         { time: '15:00', visitors: 450 }
     ];
 
-    const topArticles = [
-        { title: 'Tin nóng: Biến động kinh tế trong tuần qua', views: 25420, comments: 189 },
-        { title: 'Công nghệ AI đang thay đổi thế giới như thế nào?', views: 19840, comments: 156 },
-        { title: 'Kết quả bóng đá Việt Nam vs Malaysia', views: 18750, comments: 342 },
-        { title: 'Phân tích thị trường chứng khoán tháng 12', views: 16890, comments: 98 },
-        { title: 'Review smartphone flagship mới nhất 2024', views: 15420, comments: 203 }
+    const recentArticles = [
+        {
+            id: 1,
+            title: 'Microsoft quisque at ipsum vel orci eleifend ultrices',
+            category: 'Công nghệ',
+            author: 'Nguyễn Văn A',
+            date: '26/07/2025',
+            status: 'published',
+            views: '1,234',
+            featured: true
+        },
+        {
+            id: 2,
+            title: 'London ipsum dolor sit amet, consectetur adipiscing elit',
+            category: 'Văn hóa',
+            author: 'Trần Thị B',
+            date: '25/07/2025',
+            status: 'pending',
+            views: '856',
+            featured: false
+        },
+        {
+            id: 3,
+            title: 'Pellentesque dui nibh, pellentesque ut dapibus ut',
+            category: 'Thể thao',
+            author: 'Lê Văn C',
+            date: '24/07/2025',
+            status: 'published',
+            views: '2,341',
+            featured: true
+        },
+        {
+            id: 4,
+            title: 'Motobike Vestibulum venenatis purus nec nibh volutpat',
+            category: 'Thể thao',
+            author: 'Phạm Thị D',
+            date: '23/07/2025',
+            status: 'published',
+            views: '1,567',
+            featured: false
+        },
+        {
+            id: 5,
+            title: 'AI và Machine Learning trong tương lai',
+            category: 'Công nghệ',
+            author: 'Hoàng Văn E',
+            date: '22/07/2025',
+            status: 'draft',
+            views: '0',
+            featured: false
+        }
     ];
 
     return (
@@ -130,9 +158,8 @@ const Analytics = () => {
 
                 <StatsCard statsData={overviewStats} />
 
-                {/* Charts Section */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                    {/* Traffic Overview */}
+
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                         <div className="flex items-center justify-between mb-6">
                             <h3 className="text-lg font-semibold text-gray-900">Lưu lượng truy cập</h3>
@@ -161,7 +188,6 @@ const Analytics = () => {
                         </div>
                     </div>
 
-                    {/* Category Distribution */}
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                         <div className="flex items-center justify-between mb-6">
                             <h3 className="text-lg font-semibold text-gray-900">Phân bố theo danh mục</h3>
@@ -188,96 +214,10 @@ const Analytics = () => {
                         </div>
                     </div>
                 </div>
+                <TopArticleTable
+                    articles={recentArticles}
+                />
 
-                {/* Real-time & Top Articles */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Real-time Visitors */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-lg font-semibold text-gray-900">Truy cập thời gian thực</h3>
-                            <div className="flex items-center space-x-2">
-                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                <span className="text-sm text-gray-500">Live</span>
-                            </div>
-                        </div>
-                        <div className="h-60">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={realtimeData}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                    <XAxis dataKey="time" stroke="#6b7280" />
-                                    <YAxis stroke="#6b7280" />
-                                    <Tooltip />
-                                    <Line
-                                        type="monotone"
-                                        dataKey="visitors"
-                                        stroke="#10B981"
-                                        strokeWidth={2}
-                                        dot={{ fill: '#10B981', strokeWidth: 2, r: 4 }}
-                                    />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-
-                    {/* Top Articles */}
-                    <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-lg font-semibold text-gray-900">Bài viết được đọc nhiều nhất</h3>
-                            <Award className="w-5 h-5 text-gray-500" />
-                        </div>
-                        <div className="space-y-4">
-                            {topArticles.map((article, index) => (
-                                <div key={index} className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg transition-colors">
-                                    <div className="flex items-center space-x-4">
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${index === 0 ? 'bg-yellow-100 text-yellow-800' :
-                                            index === 1 ? 'bg-gray-100 text-gray-600' :
-                                                index === 2 ? 'bg-orange-100 text-orange-600' :
-                                                    'bg-blue-50 text-blue-600'
-                                            }`}>
-                                            {index + 1}
-                                        </div>
-                                        <div>
-                                            <p className="font-medium text-gray-900 text-sm leading-tight">{article.title}</p>
-                                            <div className="flex items-center space-x-4 mt-1">
-                                                <span className="text-xs text-gray-500 flex items-center">
-                                                    <Eye className="w-3 h-3 mr-1" />
-                                                    {article.views.toLocaleString()}
-                                                </span>
-                                                <span className="text-xs text-gray-500 flex items-center">
-                                                    <MessageSquare className="w-3 h-3 mr-1" />
-                                                    {article.comments}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Quick Actions */}
-                <div className="mt-8 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Thao tác nhanh</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <button className="flex items-center justify-center space-x-2 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all">
-                            <FileText className="w-5 h-5 text-gray-500" />
-                            <span className="text-sm font-medium text-gray-700">Tạo báo cáo mới</span>
-                        </button>
-                        <button className="flex items-center justify-center space-x-2 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition-all">
-                            <Activity className="w-5 h-5 text-gray-500" />
-                            <span className="text-sm font-medium text-gray-700">Phân tích chi tiết</span>
-                        </button>
-                        <button className="flex items-center justify-center space-x-2 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-all">
-                            <Target className="w-5 h-5 text-gray-500" />
-                            <span className="text-sm font-medium text-gray-700">Thiết lập mục tiêu</span>
-                        </button>
-                        <button className="flex items-center justify-center space-x-2 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-all">
-                            <Globe className="w-5 h-5 text-gray-500" />
-                            <span className="text-sm font-medium text-gray-700">Báo cáo SEO</span>
-                        </button>
-                    </div>
-                </div>
             </div>
         </div>
     );

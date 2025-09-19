@@ -15,11 +15,9 @@ export const useArticle = () => {
     const [imagePreview, setImagePreview] = useState(null);
     const [selectedTags, setSelectedTags] = useState([]);
 
-    // Loading states
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    // Data state
     const [articles, setArticles] = useState([]);
     const [error, setError] = useState(null);
     const [pagination, setPagination] = useState({
@@ -220,12 +218,12 @@ export const useArticle = () => {
             setLoading(true);
             setError(null);
 
-            // xử lý cập nhật
+            const res = await articleService.updateArticle(articleId, articleData);
 
             return {
                 success: true,
                 message: "Bài báo đã được cập nhật thành công!",
-                data: result
+                data: res
             };
         } catch (error) {
             console.error("Error updating article:", error);
@@ -236,6 +234,7 @@ export const useArticle = () => {
             setLoading(false);
         }
     };
+
 
     useEffect(() => {
         return () => {
@@ -259,6 +258,7 @@ export const useArticle = () => {
 
         articles,
         pagination,
+        setImagePreview,
 
         handleAddArticleFormChange,
         handleCategoryChange,

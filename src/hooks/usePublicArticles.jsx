@@ -136,7 +136,6 @@ const usePublicArticles = (categorySlug) => {
     };
 
 
-    // Reset pagination when category changes
     const resetPagination = () => {
         setCurrentPage(1);
         setTotalPages(1);

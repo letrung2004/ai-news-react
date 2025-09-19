@@ -23,6 +23,7 @@ import UserManagement from './pages/manager/UserManagement'
 import CommentManagement from './pages/manager/CommentManagement'
 import SystemSettings from './pages/manager/SystemSettings'
 import Analytics from './pages/manager/Analytics'
+import UpdateArticle from './pages/manager/UpdateArticle'
 
 
 function App() {
@@ -32,7 +33,7 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            {/* Auth route */}
+            {/* auth route */}
             <Route path="/login" element={<Login />} />
             <Route path="/authenticate" element={<Authenticate />} />
             <Route path="/register" element={<Register />} />
@@ -40,14 +41,14 @@ function App() {
             <Route path="/unauthorized" element={<Unauthorized />} />
 
 
-            {/* Reader route */}
+            {/* reader route */}
             <Route path="/" element={<Layout />} >
               <Route index element={<HomePage />} />
               <Route path="/detail/:articleSlug" element={<ArticlePage />} />
               <Route path="/category/:categorySlug" element={<ListArticle />} />
             </Route>
 
-            {/* Admin route */}
+            {/* admin route */}
             <Route path="/manager" element={<AdminRoute element={<AdminLayout />} />} >
               <Route index element={<AdminHome />} />
               <Route path="/manager/articles/new" element={
@@ -62,6 +63,7 @@ function App() {
               <Route path="/manager/settings" element={<SuperAdminRoute element={<SystemSettings />} />} />
               <Route path="/manager/comments" element={<CommentManagement />} />
               <Route path="/manager/analytics" element={<Analytics />} />
+              <Route path="/manager/articles/update/:articleSlug" element={<UpdateArticle />} />
             </Route>
           </Routes>
         </BrowserRouter>

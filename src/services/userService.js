@@ -8,6 +8,18 @@ export const userService = {
         return response.data;
     },
 
+    // get detail user
+    getUser: async (userId) => {
+        const response = await AUTH_REQUEST.get(ENDPOINTS.ADMIN.GET_USER(userId));
+        return response.data;
+    },
+
+    // update user
+    updateUser: async (userId, userUpdateData) => {
+        const response = await AUTH_REQUEST.put(ENDPOINTS.ADMIN.UPDATE_USER(userId), userUpdateData);
+        return response.data;
+    },
+
 
 
 };

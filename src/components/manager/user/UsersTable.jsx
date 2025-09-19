@@ -99,7 +99,7 @@ const UsersTable = ({ users, onEdit, onDelete }) => {
                                     <td className="px-6 py-4">
                                         <div className="flex items-center space-x-2">
                                             <button
-                                                onClick={() => onEdit(user)}
+                                                onClick={() => onEdit(user.id)}
                                                 className="p-1 text-blue-600 hover:bg-blue-100 rounded-md transition-colors"
                                                 title="Chỉnh sửa"
                                             >

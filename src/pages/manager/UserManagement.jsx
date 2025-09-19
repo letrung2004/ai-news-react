@@ -5,15 +5,17 @@ import FilterBar from "../../components/manager/FilterBar";
 import Pagination from "../../components/Pagination";
 import UsersTable from "../../components/manager/user/UsersTable";
 import { useUser } from "../../hooks/useUser";
+import UserModal from "../../components/manager/user/UserModal";
 
 const UserManagement = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedRole, setSelectedRole] = useState("all");
     const [selectedStatus, setSelectedStatus] = useState("all");
-    const [showAddModal, setShowAddModal] = useState(false);
+    const [showUserModal, setShowUserModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
-    const { users, loadUsers } = useUser();
-
+    const { users, loadUsers, userDetail, getUser } = useUser();
+    const [selectedUserId, setSelectedUserId] = useState(null);
+    const [modalMode, setModalMode] = useState('add');
 
     const roles = [
         { value: 'ADMIN', label: 'Quản trị' },
@@ -56,9 +58,32 @@ const UserManagement = () => {
         }
     ];
 
-
     const handleDeleteUser = (userId) => {
         // xu ly xoa
+    };
+
+    const handleCloseModal = () => {
+        setShowUserModal(false);
+        setSelectedUserId(null);
+        setModalMode('add');
+    };
+
+    const handleEditUser = (userId) => {
+        setSelectedUserId(userId);
+        setModalMode('edit');
+        setShowUserModal(true);
+    };
+
+    const handleAddUser = () => {
+        setSelectedUserId(null);
+        setModalMode('add');
+        setShowUserModal(true);
+    };
+
+    const handleSuccess = () => {
+        // Callback khi thêm/sửa thành công
+        loadUsers(); // Reload danh sách users
+        handleCloseModal();
     };
 
     return (
@@ -73,7 +98,7 @@ const UserManagement = () => {
                         </div>
                         <div className="flex items-center space-x-3">
                             <button
-                                onClick={() => setShowAddModal(true)}
+                                onClick={handleAddUser}
                                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
                             >
                                 <UserPlus className="w-4 h-4" />
@@ -83,7 +108,7 @@ const UserManagement = () => {
                     </div>
                 </div>
 
-                {/* <StatsCard statsData={statsData} /> */}
+                <StatsCard statsData={statsData} />
 
                 {/* Filters */}
                 <FilterBar
@@ -97,20 +122,23 @@ const UserManagement = () => {
                 {/* Users Table */}
                 <UsersTable
                     users={users}
-                    // onEdit={(user) => {
-                    //     setSelectedUser(user);
-                    //     setShowAddModal(true);
-                    // }}
                     onDelete={handleDeleteUser}
+                    onEdit={handleEditUser}
                 />
 
+                <UserModal
+                    isOpen={showUserModal}
+                    onClose={handleCloseModal}
+                    userId={selectedUserId}
+                    mode={modalMode}
+                    onSuccess={handleSuccess}
+                />
 
                 {/* <Pagination
                     currentPage={1}
                     totalPages={5}
                     onPageChange={(page) => console.log("Chuyển sang trang:", page)}
                 /> */}
-
             </div>
         </div>
     );
