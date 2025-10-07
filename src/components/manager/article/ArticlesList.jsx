@@ -24,7 +24,7 @@ const ArticlesList = ({ articles, onDelete, onStatusChange, loading }) => {
         },
         'REJECTED': {
             label: 'Từ chối',
-            color: 'bg-red-100 text-red-600',
+            color: 'bg-red-100 text-red-605',
             icon: XCircle
         }
     };
