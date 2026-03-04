@@ -44,7 +44,7 @@ export const articleService = {
 
     //get detail article
     getDetailArticle: async (articleSlug) => {
-        const response = await API.get(ENDPOINTS.NEWS.GET_DETAIL_ARTICLE(articleSlug));
+        const response = await AUTH_REQUEST.get(ENDPOINTS.NEWS.GET_DETAIL_ARTICLE(articleSlug));
         return response.data;
     },
 
@@ -57,6 +57,14 @@ export const articleService = {
     //get all article by category
     getAllArticleByCategory: async (categorySlug, page = 1) => {
         const response = await API.get(`${ENDPOINTS.NEWS.GET_ALL_ARTICLE_BY_CATEGORY(categorySlug)}?page=${page}`);
+        return response.data.result;
+    },
+
+    // get recommendation article for user
+    getRecommendations: async (size = 6) => {
+        const response = await AUTH_REQUEST.get(
+            `${ENDPOINTS.NEWS.RECOMMENDATION}?size=${size}`
+        );
         return response.data.result;
     },
 

@@ -16,7 +16,9 @@ export const ENDPOINTS = {
         GET_COMMENTS: (articleId) => `/content/comments/article/${articleId}`,
         GET_ALL_TAGS: '/content/tag',
         GET_ALL_ARTICLE_BY_CATEGORY: (categorySlug) => `/content/article/all/${categorySlug}`,
-        SEND_QUESTION: '/ai/ask',
+        SEND_QUESTION: '/ai/ask', // chỉnh lại chỗ này đã update chat rồi
+        RECOMMENDATION: 'content/article/recommendations'
+
 
     },
     ADMIN: {
