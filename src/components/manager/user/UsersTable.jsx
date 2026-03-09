@@ -1,134 +1,93 @@
 import React from "react";
-import { Mail, Phone, Edit3, Trash2, User, Shield, Crown } from "lucide-react";
+import { Mail, Edit3, User, Shield, Crown } from "lucide-react";
 
-const getRoleBadge = (roles) => {
-    // Lấy role đầu tiên từ mảng roles
-    const primaryRole = roles && roles.length > 0 ? roles[0].name : 'USER';
-
-    const roleConfig = {
-        ADMIN: { label: "Quản trị", color: "bg-red-100 text-red-800 border-red-200", icon: Crown },
-        EDITOR: { label: "Biên tập", color: "bg-blue-100 text-blue-800 border-blue-200", icon: Shield },
-        USER: { label: "Người dùng", color: "bg-gray-100 text-gray-800 border-gray-200", icon: User }
-    };
-
-    return roleConfig[primaryRole] || roleConfig.USER;
+const ROLE_CONFIG = {
+    ADMIN:  { label: "Quản trị",   cls: "bg-red-50 text-red-600 border-red-200",    icon: Crown },
+    EDITOR: { label: "Biên tập",   cls: "bg-blue-50 text-blue-600 border-blue-200", icon: Shield },
+    USER:   { label: "Người dùng", cls: "bg-gray-50 text-gray-600 border-gray-200", icon: User },
 };
 
-const UsersTable = ({ users, onEdit, onDelete }) => {
-    const userList = users?.result || [];
+const getRoleConfig = (roles) => {
+    const name = roles?.[0]?.name || "USER";
+    return ROLE_CONFIG[name] || ROLE_CONFIG.USER;
+};
 
-    return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="p-6 border-b border-gray-200">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h3 className="text-lg font-semibold text-gray-900">Danh sách người dùng</h3>
-                        <p className="text-sm text-gray-600 mt-1">Hiển thị {userList.length} người dùng</p>
-                    </div>
-                </div>
-            </div>
+const Avatar = ({ name }) => (
+    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
+        {(name || "?").charAt(0).toUpperCase()}
+    </div>
+);
 
-            <div className="overflow-x-auto">
-                <table className="w-full">
-                    <thead className="bg-gray-50 border-b border-gray-200">
-                        <tr>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Người dùng
-                            </th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Vai trò
-                            </th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Thao tác
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {userList.map((user) => {
-                            const roleConfig = getRoleBadge(user.roles);
-                            const RoleIcon = roleConfig.icon;
-                            const displayName = user.firstName || user.username;
-                            const fullName = user.firstName && user.lastName
-                                ? `${user.firstName} ${user.lastName}`
-                                : user.firstName || user.username;
+// users giờ là array thẳng
+const UsersTable = ({ users = [], onEdit }) => (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-gray-800">Danh sách người dùng</h3>
+            <span className="text-xs text-gray-400">{users.length} người dùng</span>
+        </div>
 
-                            return (
-                                <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center space-x-3">
-                                            <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white font-medium text-sm">
-                                                {displayName.charAt(0).toUpperCase()}
-                                            </div>
-                                            <div>
-                                                <div className="text-sm font-medium text-gray-900">
-                                                    {fullName}
-                                                </div>
-                                                <div className="text-xs text-gray-500 mb-1">
-                                                    @{user.username}
-                                                </div>
-                                                {user.email && (
-                                                    <div className="text-sm text-gray-500 flex items-center space-x-1">
-                                                        <Mail className="w-3 h-3" />
-                                                        <span>{user.email}</span>
-                                                    </div>
-                                                )}
-                                                {user.phone && (
-                                                    <div className="text-sm text-gray-500 flex items-center space-x-1 mt-1">
-                                                        <Phone className="w-3 h-3" />
-                                                        <span>{user.phone}</span>
-                                                    </div>
-                                                )}
-                                                {!user.email && !user.phone && (
-                                                    <div className="text-xs text-gray-400 italic">
-                                                        Chưa có thông tin liên hệ
-                                                    </div>
-                                                )}
-                                            </div>
+        <div className="overflow-x-auto">
+            <table className="w-full">
+                <thead>
+                    <tr className="border-b border-gray-50 bg-gray-50/50">
+                        <th className="text-left px-6 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Người dùng</th>
+                        <th className="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide hidden md:table-cell">Email</th>
+                        <th className="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Vai trò</th>
+                        <th className="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                    {users.map((user) => {
+                        const role = getRoleConfig(user.roles);
+                        const RoleIcon = role.icon;
+                        const displayName = [user.firstName, user.lastName].filter(Boolean).join(" ") || user.username;
+
+                        return (
+                            <tr key={user.id} className="hover:bg-gray-50/80 transition-colors group">
+                                <td className="px-6 py-3">
+                                    <div className="flex items-center gap-3">
+                                        <Avatar name={user.firstName || user.username} />
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-800">{displayName}</p>
+                                            <p className="text-xs text-gray-400">@{user.username}</p>
                                         </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="space-y-1">
-                                            <span
-                                                className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${roleConfig.color}`}
-                                            >
-                                                <RoleIcon className="w-3 h-3 mr-1" />
-                                                {roleConfig.label}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center space-x-2">
-                                            <button
-                                                onClick={() => onEdit(user.id)}
-                                                className="p-1 text-blue-600 hover:bg-blue-100 rounded-md transition-colors"
-                                                title="Chỉnh sửa"
-                                            >
-                                                <Edit3 className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                onClick={() => onDelete(user.id)}
-                                                className="p-1 text-red-600 hover:bg-red-100 rounded-md transition-colors"
-                                                title="Xóa"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            );
-                        })}
-                        {userList.length === 0 && (
-                            <tr>
-                                <td colSpan={3} className="px-6 py-8 text-center text-gray-500">
-                                    Không có người dùng nào
+                                    </div>
+                                </td>
+                                <td className="px-4 py-3 hidden md:table-cell">
+                                    {user.email
+                                        ? <div className="flex items-center gap-1.5 text-xs text-gray-500"><Mail className="w-3 h-3 flex-shrink-0" /><span className="truncate max-w-xs">{user.email}</span></div>
+                                        : <span className="text-xs text-gray-300 italic">Chưa có</span>
+                                    }
+                                </td>
+                                <td className="px-4 py-3">
+                                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-medium border ${role.cls}`}>
+                                        <RoleIcon className="w-3 h-3" />
+                                        {role.label}
+                                    </span>
+                                </td>
+                                <td className="px-4 py-3">
+                                    <button
+                                        onClick={() => onEdit(user.id)}
+                                        className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                                    >
+                                        <Edit3 className="w-3.5 h-3.5" />
+                                    </button>
                                 </td>
                             </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
+                        );
+                    })}
+                    {users.length === 0 && (
+                        <tr>
+                            <td colSpan={4} className="px-6 py-16 text-center">
+                                <User className="w-8 h-8 text-gray-200 mx-auto mb-3" />
+                                <p className="text-sm text-gray-400">Không có người dùng nào</p>
+                            </td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
         </div>
-    );
-};
+    </div>
+);
 
 export default UsersTable;

@@ -1,40 +1,30 @@
-import React from 'react';
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { editorConfig } from '../../../configs/editorConfig';
+import React from "react";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { editorConfig } from "../../../configs/editorConfig";
 
-const ContentEditor = ({ content, onChange }) => {
-    return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="p-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
-                    Nội dung bài viết
-                </label>
-
-                <div className="border border-gray-200 rounded-lg overflow-hidden min-h-[650px] ckeditor-content">
-                    <CKEditor
-                        editor={ClassicEditor}
-                        config={editorConfig}
-                        data={content}
-                        onChange={(event, editor) => {
-                            const data = editor.getData();
-                            onChange(data);
-                        }}
-                        onReady={(editor) => {
-                            const editableElement = editor.editing.view.document.getRoot();
-                            editor.editing.view.change(writer => {
-                                writer.setStyle('min-height', '650px', editableElement);
-                            });
-                            console.log('CKEditor is ready to use!', editor);
-                        }}
-                        onError={(error, { willEditorRestart }) => {
-                            console.error('CKEditor error:', error);
-                        }}
-                    />
-                </div>
-            </div>
+const ContentEditor = ({ content, onChange }) => (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="px-5 pt-4 pb-2 border-b border-gray-50">
+            <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                Nội dung bài viết
+            </label>
         </div>
-    );
-};
+        <div className="ckeditor-content">
+            <CKEditor
+                editor={ClassicEditor}
+                config={editorConfig}
+                data={content}
+                onChange={(_, editor) => onChange(editor.getData())}
+                onReady={(editor) => {
+                    const root = editor.editing.view.document.getRoot();
+                    editor.editing.view.change((w) =>
+                        w.setStyle("min-height", "600px", root)
+                    );
+                }}
+            />
+        </div>
+    </div>
+);
 
 export default ContentEditor;

@@ -1,201 +1,178 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Eye, Edit, Trash2, MoreVertical, User, Calendar, Eye as EyeIcon, FileText, CheckCircle, XCircle, Clock, Tag, Archive } from "lucide-react";
+import {
+    Edit, Trash2, MoreVertical, User, Calendar,
+    FileText, CheckCircle, XCircle, Clock, Tag, Archive
+} from "lucide-react";
 import SimpleLoading from "../../SimpleLoading";
 
+const statusConfig = {
+    PENDING:   { label: "Chờ duyệt", bg: "bg-amber-50 text-amber-700 border-amber-200",   icon: Clock },
+    PUBLISHED: { label: "Xuất bản",  bg: "bg-emerald-50 text-emerald-700 border-emerald-200", icon: CheckCircle },
+    ARCHIVED:  { label: "Lưu trữ",  bg: "bg-gray-50 text-gray-600 border-gray-200",       icon: Archive },
+    REJECTED:  { label: "Từ chối",  bg: "bg-red-50 text-red-600 border-red-200",           icon: XCircle },
+    DRAFT:     { label: "Nháp",     bg: "bg-gray-50 text-gray-500 border-gray-200",        icon: FileText },
+};
+
+const StatusBadge = ({ status }) => {
+    const cfg = statusConfig[status] || statusConfig.PENDING;
+    const Icon = cfg.icon;
+    return (
+        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium border ${cfg.bg}`}>
+            <Icon className="w-3 h-3" />
+            {cfg.label}
+        </span>
+    );
+};
+
+const AiBadge = ({ article }) => {
+    const ready = article.summary && article.audioUrl && article.embedding;
+    return ready ? (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs bg-indigo-50 text-indigo-600 border border-indigo-200">
+            <CheckCircle className="w-3 h-3" /> AI sẵn sàng
+        </span>
+    ) : (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs bg-gray-50 text-gray-400 border border-gray-200">
+            <XCircle className="w-3 h-3" /> AI chưa xong
+        </span>
+    );
+};
+
+const formatAuthors = (authors) => {
+    if (!authors?.length) return "Chưa có tác giả";
+    if (authors.length === 1) return authors[0].name || authors[0];
+    return `${authors[0].name || authors[0]} +${authors.length - 1}`;
+};
+
 const ArticlesList = ({ articles, onDelete, onStatusChange, loading }) => {
-    const [expandedDropdown, setExpandedDropdown] = useState(null);
+    const [openDropdown, setOpenDropdown] = useState(null);
 
-    const statusConfig = {
-        'PENDING': {
-            label: 'Chờ duyệt',
-            color: 'bg-yellow-100 text-yellow-600',
-            icon: Clock
-        },
-        'PUBLISHED': {
-            label: 'Xuất bản',
-            color: 'bg-green-100 text-green-600',
-            icon: CheckCircle
-        },
-        'ARCHIVED': {
-            label: 'Lưu trữ',
-            color: 'bg-gray-100 text-gray-600',
-            icon: Archive
-        },
-        'REJECTED': {
-            label: 'Từ chối',
-            color: 'bg-red-100 text-red-605',
-            icon: XCircle
-        }
-    };
-
-    const handleStatusChange = (articleId, newStatus) => {
-        onStatusChange(articleId, newStatus);
-        setExpandedDropdown(null);
-    };
-
-    const formatAuthors = (authors) => {
-        if (!authors || authors.length === 0) return 'Chưa có tác giả';
-        if (authors.length === 1) return authors[0].name || authors[0];
-        return `${authors[0].name || authors[0]} và ${authors.length - 1} người khác`;
-    };
-
-
-
-    if (loading) {
-        return (
-            <SimpleLoading />
-        );
-    }
+    if (loading) return <SimpleLoading />;
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="divide-y divide-gray-200">
-                {articles.length > 0 ? (
-                    articles.map((article) => {
-                        const statusInfo = statusConfig[article.status] || statusConfig['PENDING'];
-                        const StatusIcon = statusInfo.icon;
-
-                        return (
-                            <div key={article.id} className="p-6 hover:bg-gray-50 transition-colors">
-                                <div className="flex items-start space-x-4">
-                                    <div className="w-26 h-23 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
-                                        {article.featuredImage ? (
-                                            <img
-                                                src={article.featuredImage}
-                                                alt={article.title}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center">
-                                                <FileText className="w-6 h-6 text-gray-400" />
-                                            </div>
-                                        )}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            {articles.length === 0 ? (
+                <div className="py-20 text-center">
+                    <FileText className="w-10 h-10 text-gray-200 mx-auto mb-3" />
+                    <p className="text-sm text-gray-400">Không tìm thấy bài viết nào</p>
+                </div>
+            ) : (
+                <div className="divide-y divide-gray-50">
+                    {articles.map((article) => (
+                        <div
+                            key={article.id}
+                            className="flex items-start gap-4 px-5 py-4 hover:bg-gray-50/70 transition-colors group"
+                        >
+                            {/* Thumbnail */}
+                            <div className="w-20 h-14 flex-shrink-0 rounded-xl overflow-hidden bg-gray-100 border border-gray-100">
+                                {article.featuredImage ? (
+                                    <img
+                                        src={article.featuredImage}
+                                        alt={article.title}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center">
+                                        <FileText className="w-5 h-5 text-gray-300" />
                                     </div>
+                                )}
+                            </div>
 
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex-1">
-                                                <div className="flex items-center space-x-2 mb-2">
-                                                    <h3 className="text-lg font-semibold text-gray-900 hover:text-green-600 cursor-pointer line-clamp-1">
-                                                        {article.title || 'Không có tiêu đề'}
-                                                    </h3>
+                            {/* Content */}
+                            <div className="flex-1 min-w-0">
+                                {/* Title + status */}
+                                <div className="flex items-start gap-2 mb-1.5 flex-wrap">
+                                    <h3 className="text-sm font-semibold text-gray-800 line-clamp-1 group-hover:text-green-600 transition-colors flex-1 min-w-0">
+                                        {article.title || "Không có tiêu đề"}
+                                    </h3>
+                                    <StatusBadge status={article.status} />
+                                </div>
 
-                                                    <span className={`px-2 py-1 text-xs rounded-full font-medium flex items-center space-x-1 ${statusInfo.color}`}>
-                                                        <StatusIcon className="w-3 h-3" />
-                                                        <span>{statusInfo.label}</span>
-                                                    </span>
-                                                </div>
+                                {/* Summary */}
+                                {article.summary && (
+                                    <p className="text-xs text-gray-400 line-clamp-1 mb-2">{article.summary}</p>
+                                )}
 
-                                                {/* Content Preview */}
-                                                {article.summary && (
-                                                    <p className="text-gray-600 text-sm mb-3 line-clamp-1">
-                                                        {article.summary}
-                                                    </p>
-                                                )}
-
-                                                <div className="flex items-center space-x-6 text-sm text-gray-500 flex-wrap">
-                                                    <div className="flex items-center space-x-1">
-                                                        <User className="w-4 h-4" />
-                                                        <span>{formatAuthors(article.authors)}</span>
-                                                    </div>
-                                                    <div className="flex items-center space-x-1">
-                                                        <Calendar className="w-4 h-4" />
-                                                        <span>{article.created}</span>
-                                                    </div>
-
-                                                    {article.category && (
-                                                        <span className="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded-full flex items-center space-x-1">
-                                                            <Tag className="w-3 h-3" />
-                                                            <span>{article.category.name}</span>
-                                                        </span>
-                                                    )}
-                                                    {article.summary && article.audioUrl && article.embedding ? (
-                                                        <div className="px-2 py-1 bg-indigo-50 text-indigo-700 text-xs rounded-lg flex items-center space-x-2">
-                                                            <CheckCircle className="w-4 h-4" />
-                                                            <span>Các thông tin do AI xử lý đã chuẩn bị xong</span>
-                                                        </div>
-                                                    ) : (
-                                                        <div className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-lg flex items-center space-x-2">
-                                                            <XCircle className="w-4 h-4" />
-                                                            <span>Các thông tin do AI xử lý chưa chuẩn bị xong</span>
-                                                        </div>
-                                                    )}
-                                                </div>
-
-
-                                            </div>
-
-                                            <div className="flex items-center space-x-2 ml-4">
-                                                {/* <button className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                                                    <Eye className="w-4 h-4" />
-                                                </button> */}
-
-                                                <Link to={`/manager/articles/update/${article.slug}`}>
-                                                    <button className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
-                                                        <Edit className="w-4 h-4" />
-                                                    </button>
-                                                </Link>
-
-                                                <button
-                                                    onClick={() => onDelete(article.id, article.title)}
-                                                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
-
-                                                <div className="relative">
-                                                    <button
-                                                        onClick={() => setExpandedDropdown(expandedDropdown === article.id ? null : article.id)}
-                                                        className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                                                    >
-                                                        <MoreVertical className="w-4 h-4" />
-                                                    </button>
-
-                                                    {expandedDropdown === article.id && (
-                                                        <div className="absolute right-0 top-10 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
-                                                            <div className="py-1">
-                                                                <div className="px-3 py-2 text-xs text-gray-500 font-medium border-b border-gray-100">
-                                                                    Thay đổi trạng thái
-                                                                </div>
-                                                                {Object.entries(statusConfig).map(([status, config]) => {
-                                                                    if (status === article.status) return null;
-                                                                    const Icon = config.icon;
-                                                                    return (
-                                                                        <button
-                                                                            key={status}
-                                                                            onClick={() => handleStatusChange(article.id, status)}
-                                                                            className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
-                                                                        >
-                                                                            <Icon className="w-4 h-4" />
-                                                                            <span>{config.label}</span>
-                                                                        </button>
-                                                                    );
-                                                                })}
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                {/* Meta row */}
+                                <div className="flex items-center flex-wrap gap-x-4 gap-y-1">
+                                    <span className="flex items-center gap-1 text-xs text-gray-400">
+                                        <User className="w-3 h-3" />
+                                        {formatAuthors(article.authors)}
+                                    </span>
+                                    <span className="flex items-center gap-1 text-xs text-gray-400">
+                                        <Calendar className="w-3 h-3" />
+                                        {article.created
+                                            ? new Date(article.created).toLocaleDateString("vi-VN")
+                                            : "—"}
+                                    </span>
+                                    {article.category?.name && (
+                                        <span className="flex items-center gap-1 text-xs text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md">
+                                            <Tag className="w-3 h-3" />
+                                            {article.category.name}
+                                        </span>
+                                    )}
+                                    <AiBadge article={article} />
                                 </div>
                             </div>
-                        );
-                    })
-                ) : (
-                    <div className="p-12 text-center">
-                        <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                        <p className="text-gray-500">Không tìm thấy bài viết nào</p>
-                    </div>
-                )}
-            </div>
 
-            {expandedDropdown && (
-                <div
-                    className="fixed inset-0 z-5"
-                    onClick={() => setExpandedDropdown(null)}
-                />
+                            {/* Actions */}
+                            <div className="flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Link to={`/manager/articles/update/${article.slug}`}>
+                                    <button className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
+                                        <Edit className="w-4 h-4" />
+                                    </button>
+                                </Link>
+
+                                <button
+                                    onClick={() => onDelete(article.id, article.title)}
+                                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+
+                                {/* Status dropdown */}
+                                <div className="relative">
+                                    <button
+                                        onClick={() => setOpenDropdown(openDropdown === article.id ? null : article.id)}
+                                        className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                                    >
+                                        <MoreVertical className="w-4 h-4" />
+                                    </button>
+
+                                    {openDropdown === article.id && (
+                                        <div className="absolute right-0 top-10 w-48 bg-white rounded-xl shadow-lg border border-gray-100 z-20 py-1">
+                                            <p className="px-3 py-1.5 text-xs font-medium text-gray-400 border-b border-gray-50">
+                                                Đổi trạng thái
+                                            </p>
+                                            {Object.entries(statusConfig).map(([status, cfg]) => {
+                                                if (status === article.status) return null;
+                                                const Icon = cfg.icon;
+                                                return (
+                                                    <button
+                                                        key={status}
+                                                        onClick={() => {
+                                                            onStatusChange(article.id, status);
+                                                            setOpenDropdown(null);
+                                                        }}
+                                                        className="w-full px-3 py-2 text-left text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2 transition-colors"
+                                                    >
+                                                        <Icon className="w-4 h-4" />
+                                                        {cfg.label}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* Click outside to close dropdown */}
+            {openDropdown && (
+                <div className="fixed inset-0 z-10" onClick={() => setOpenDropdown(null)} />
             )}
         </div>
     );

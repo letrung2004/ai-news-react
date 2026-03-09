@@ -1,240 +1,89 @@
-import React, { useState } from "react";
-import {
-    TrendingUp, Eye, MessageSquare, Users, Plus, FolderPlus,
-    UserPlus, Settings, FileText, Edit3, Trash2, ArrowUpRight,
-    BarChart3, Activity, Clock, Calendar, Star, Filter
-} from "lucide-react";
-import StatsCard from "../../components/manager/StatsCard";
-import Pagination from "../../components/Pagination";
-import TopArticleTable from "../../components/manager/TopArticleTable";
+// pages/admin/AdminHome.jsx
+import { useEffect } from "react";
+import { RefreshCw, FileText, Users, MessageSquare, Tag } from "lucide-react";
 
+import { useArticle }     from "../../hooks/useArticle";
+import { useAdminStats }  from "../../hooks/useAdminStats";
+
+import StatsCard    from "../../components/manager/StatsCard";
+import StatusChart  from "../../components/manager/home/StatusChart";
+import QuickActions from "../../components/manager/home/QuickActions";
+import ArticleTable from "../../components/manager/home/ArticleTable";
+
+// ── Stat card config ───────────────────────────────────────────────────────
+const buildStatCards = (stats, loading) => [
+    { title: "Tổng bài viết", value: loading ? "—" : stats.totalArticles.toLocaleString("vi-VN"),   icon: FileText,      bgColor: "bg-green-50",  iconColor: "text-green-600"  },
+    { title: "Người dùng",    value: loading ? "—" : stats.totalUsers.toLocaleString("vi-VN"),       icon: Users,         bgColor: "bg-blue-50",   iconColor: "text-blue-600"   },
+    { title: "Bình luận",     value: loading ? "—" : stats.totalComments.toLocaleString("vi-VN"),    icon: MessageSquare, bgColor: "bg-violet-50", iconColor: "text-violet-600" },
+    { title: "Danh mục",      value: loading ? "—" : stats.totalCategories.toLocaleString("vi-VN"),  icon: Tag,           bgColor: "bg-orange-50", iconColor: "text-orange-600" },
+];
+
+// ── Page ───────────────────────────────────────────────────────────────────
 const AdminHome = () => {
-    const [activeTab, setActiveTab] = useState("dashboard");
-    const [selectedTimeRange, setSelectedTimeRange] = useState("7days");
+    const { stats, loading: statsLoading }                              = useAdminStats();
+    const { articles, pagination, loading: articlesLoading, loadArticles } = useArticle();
 
-    const statsData = [
-        {
-            title: 'Tổng bài viết',
-            value: '2,847',
-            icon: FileText,
-            color: 'from-blue-500 to-blue-600',
-            bgColor: 'bg-blue-50',
-            iconColor: 'text-blue-600'
-        },
-        {
-            title: 'Lượt xem hôm nay',
-            value: '45,623',
-            icon: Eye,
-            color: 'from-green-500 to-green-600',
-            bgColor: 'bg-green-50',
-            iconColor: 'text-green-600'
-        },
-        {
-            title: 'Bình luận mới',
-            value: '1,234',
-            icon: MessageSquare,
-            color: 'from-purple-500 to-purple-600',
-            bgColor: 'bg-purple-50',
-            iconColor: 'text-purple-600'
-        },
-        {
-            title: 'Người dùng online',
-            value: '892',
-            icon: Users,
-            color: 'from-orange-500 to-orange-600',
-            bgColor: 'bg-orange-50',
-            iconColor: 'text-orange-600'
-        }
-    ];
+    useEffect(() => { loadArticles(1); }, []);
 
-    const recentArticles = [
-        {
-            id: 1,
-            title: 'Microsoft quisque at ipsum vel orci eleifend ultrices',
-            category: 'Công nghệ',
-            author: 'Nguyễn Văn A',
-            date: '26/07/2025',
-            status: 'published',
-            views: '1,234',
-            featured: true
-        },
-        {
-            id: 2,
-            title: 'London ipsum dolor sit amet, consectetur adipiscing elit',
-            category: 'Văn hóa',
-            author: 'Trần Thị B',
-            date: '25/07/2025',
-            status: 'pending',
-            views: '856',
-            featured: false
-        },
-        {
-            id: 3,
-            title: 'Pellentesque dui nibh, pellentesque ut dapibus ut',
-            category: 'Thể thao',
-            author: 'Lê Văn C',
-            date: '24/07/2025',
-            status: 'published',
-            views: '2,341',
-            featured: true
-        },
-        {
-            id: 4,
-            title: 'Motobike Vestibulum venenatis purus nec nibh volutpat',
-            category: 'Thể thao',
-            author: 'Phạm Thị D',
-            date: '23/07/2025',
-            status: 'published',
-            views: '1,567',
-            featured: false
-        },
-        {
-            id: 5,
-            title: 'AI và Machine Learning trong tương lai',
-            category: 'Công nghệ',
-            author: 'Hoàng Văn E',
-            date: '22/07/2025',
-            status: 'draft',
-            views: '0',
-            featured: false
-        }
-    ];
-
-    const quickActions = [
-        {
-            label: 'Thêm bài viết mới',
-            icon: Plus,
-            color: 'from-green-500 to-green-600',
-            action: () => setActiveTab('add-new'),
-            description: 'Tạo nội dung mới'
-        },
-        {
-            label: 'Thêm danh mục',
-            icon: FolderPlus,
-            color: 'from-blue-500 to-blue-600',
-            description: 'Quản lý phân loại'
-        },
-        {
-            label: 'Thêm người dùng',
-            icon: UserPlus,
-            color: 'from-purple-500 to-purple-600',
-            description: 'Quản lý tài khoản'
-        },
-        {
-            label: 'Cài đặt hệ thống',
-            icon: Settings,
-            color: 'from-orange-500 to-orange-600',
-            description: 'Cấu hình website'
-        }
-    ];
-
-    // const getCategoryColor = (category) => {
-    //     const colors = {
-    //         'Công nghệ': 'bg-blue-100 text-blue-800 border-blue-200',
-    //         'Văn hóa': 'bg-purple-100 text-purple-800 border-purple-200',
-    //         'Thể thao': 'bg-green-100 text-green-800 border-green-200',
-    //         'Kinh tế': 'bg-orange-100 text-orange-800 border-orange-200',
-    //         'Giải trí': 'bg-pink-100 text-pink-800 border-pink-200'
-    //     };
-    //     return colors[category] || 'bg-gray-100 text-gray-800 border-gray-200';
-    // };
+    const handlePageChange = (page) => {
+        if (page < 1 || page > pagination.totalPages) return;
+        loadArticles(page);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-            <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen bg-gray-50 p-6">
+            <div className="max-w-7xl mx-auto space-y-6">
+
                 {/* Header */}
-                <div className="mb-8">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-3xl font-bold text-gray-900 mb-2">Tổng quan</h1>
-                            <p className="text-gray-600">Chào mừng trở lại! Đây là tổng quan về hoạt động của website.</p>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                            <select
-                                value={selectedTimeRange}
-                                onChange={(e) => setSelectedTimeRange(e.target.value)}
-                                className="px-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                            >
-                                <option value="7days">7 ngày qua</option>
-                                <option value="30days">30 ngày qua</option>
-                                <option value="90days">90 ngày qua</option>
-                            </select>
-                            <button className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2">
-                                <Filter className="w-4 h-4" />
-                                <span>Lọc</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Stats Cards */}
-                <StatsCard statsData={statsData} />
-
-                {/* Main Content Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                    {/* Chart */}
-                    <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-lg font-semibold text-gray-900">Lượt truy cập 7 ngày qua</h3>
-                            <div className="flex items-center space-x-2">
-                                <button className="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
-                                    Lượt xem
-                                </button>
-                                <button className="px-3 py-1 text-gray-600 rounded-lg text-sm hover:bg-gray-100">
-                                    Người dùng
-                                </button>
-                            </div>
-                        </div>
-                        <div className="h-80 bg-gradient-to-br from-green-50 to-blue-50 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-200">
-                            <div className="text-center">
-                                <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                                <p className="text-gray-600 font-medium">Biểu đồ thống kê lượt truy cập</p>
-                                <p className="text-sm text-gray-500 mt-1">Dữ liệu sẽ được hiển thị ở đây</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Quick Actions */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-6">Thao tác nhanh</h3>
-                        <div className="space-y-3">
-                            {quickActions.map((action, index) => {
-                                const IconComponent = action.icon;
-                                return (
-                                    <button
-                                        key={index}
-                                        onClick={action.action}
-                                        className={`w-full bg-gradient-to-r ${action.color} text-white p-4 rounded-xl hover:shadow-lg transition-all duration-300 group text-left`}
-                                    >
-                                        <div className="flex items-center space-x-3">
-                                            <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                                                <IconComponent className="w-5 h-5" />
-                                            </div>
-                                            <div>
-                                                <div className="font-medium">{action.label}</div>
-                                                <div className="text-sm opacity-90">{action.description}</div>
-                                            </div>
-                                        </div>
-                                    </button>
-                                );
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900">Tổng quan</h1>
+                        <p className="text-sm text-gray-400 mt-0.5">
+                            {new Date().toLocaleDateString("vi-VN", {
+                                weekday: "long", year: "numeric", month: "long", day: "numeric",
                             })}
-                        </div>
-
-
+                        </p>
                     </div>
+                    <button
+                        onClick={() => loadArticles(pagination.currentPage ?? 1)}
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-gray-50 transition-colors shadow-sm"
+                    >
+                        <RefreshCw className="w-4 h-4" />
+                        Làm mới
+                    </button>
                 </div>
 
-                {/* Recent Articles */}
-                <TopArticleTable
-                    articles={recentArticles}
-                // getCategoryColor={getCategoryColor}
-                />
+                {/* Stats */}
+                <StatsCard statsData={buildStatCards(stats, statsLoading)} />
 
+                {/* Middle row */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+                        <div className="flex items-center justify-between mb-5">
+                            <h3 className="text-sm font-semibold text-gray-800">Phân bổ bài viết</h3>
+                            {!statsLoading && (
+                                <span className="text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-lg">
+                                    {stats.totalArticles} tổng
+                                </span>
+                            )}
+                        </div>
+                        <StatusChart
+                            articlesByStatus={stats.articlesByStatus}
+                            total={stats.totalArticles}
+                            loading={statsLoading}
+                        />
+                    </div>
 
-                <Pagination
-                    currentPage={1}
-                    totalPages={5}
-                    onPageChange={(page) => console.log("Chuyển sang trang:", page)}
+                    <QuickActions />
+                </div>
+
+                {/* Articles table */}
+                <ArticleTable
+                    articles={articles}
+                    pagination={pagination}
+                    loading={articlesLoading}
+                    onPageChange={handlePageChange}
                 />
 
             </div>

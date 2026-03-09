@@ -76,4 +76,12 @@ export const articleService = {
         return response.data.result; // { articles, totalElements, tookInMillis }
     },
 
+    // Thêm vào articleService
+    getAllArticleForStats: async () => {
+        const response = await AUTH_REQUEST.get(
+            `${ENDPOINTS.ADMIN.GET_ALL_ARTICLE}?page=1&size=9999`
+        );
+        return response.data.result;
+    },
+
 };

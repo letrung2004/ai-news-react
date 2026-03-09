@@ -1,4 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { Plus } from "lucide-react";
+
 import FilterBar from "../../components/manager/FilterBar";
 import Pagination from "../../components/Pagination";
 import ArticlesList from "../../components/manager/article/ArticlesList";
@@ -8,144 +11,134 @@ import { Error } from "../../components/Error";
 import SimpleLoading from "../../components/SimpleLoading";
 
 import { useArticle } from "../../hooks/useArticle";
+import { useArticleSearch } from "../../hooks/useArticleSearch";
 import useAlert from "../../hooks/useAlert";
 import useConfirmDialog from "../../hooks/useConfirmDialog";
 
-const AllArticles = () => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const { alert, showSuccess, showError, hideAlert } = useAlert();
-    const {
-        confirmDialog,
-        handleConfirm,
-        handleCancel,
-        showDeleteConfirm,
-        showWarningConfirm
-    } = useConfirmDialog();
-
-    const {
-        articles,
-        pagination,
-        loading,
-        error,
-        loadArticles,
-        changeArticleStatus,
-        deleteArticle
-    } = useArticle();
-
-    const statusLabels = {
-        'PENDING': 'Chờ duyệt',
-        'PUBLISHED': 'Xuất bản',
-        'ARCHIVED': 'Lưu trữ',
-        'REJECTED': 'Từ chối'
-    };
-
+const useDebounce = (value, delay = 300) => {
+    const [debounced, setDebounced] = useState(value);
     useEffect(() => {
-        loadArticles(1);
-    }, []);
+        const t = setTimeout(() => setDebounced(value), delay);
+        return () => clearTimeout(t);
+    }, [value, delay]);
+    return debounced;
+};
 
+const statusOptions = [
+    { value: "PUBLISHED", label: "Xuất bản" },
+    { value: "PENDING",   label: "Chờ duyệt" },
+    { value: "DRAFT",     label: "Nháp" },
+    { value: "ARCHIVED",  label: "Lưu trữ" },
+    { value: "REJECTED",  label: "Từ chối" },
+];
 
-    const handleDeleteAction = async (articleId) => {
-        const result = await deleteArticle(articleId);
+const AllArticles = () => {
+    const [searchTerm, setSearchTerm]     = useState("");
+    const [statusFilter, setStatusFilter] = useState("all");
 
-        if (result.success) {
-            showSuccess('Thành công', result.message);
-        } else {
-            showError('Lỗi', result.message);
-        }
-    };
+    const { alert, showSuccess, showError, hideAlert } = useAlert();
+    const { confirmDialog, handleConfirm, handleCancel, showDeleteConfirm, showWarningConfirm } = useConfirmDialog();
+    const { articles, pagination, loading, error, loadArticles, changeArticleStatus, deleteArticle } = useArticle();
+
+    const debouncedSearch = useDebounce(searchTerm, 400);
+    const isSearching = debouncedSearch.trim().length > 0;
+
+    // Gọi API search khi có keyword
+    const { results: searchResults, totalElements: searchTotal, loading: searchLoading } = useArticleSearch(debouncedSearch);
+
+    useEffect(() => { loadArticles(1); }, []);
+
+    // Nguồn data: search results hoặc articles thường
+    const sourceArticles = isSearching ? searchResults : (articles || []);
+
+    // Filter status client-side trên kết quả hiện tại
+    const filtered = useMemo(() => {
+        return sourceArticles.filter(a =>
+            statusFilter === "all" || a.status === statusFilter
+        );
+    }, [sourceArticles, statusFilter]);
 
     const handleDelete = (articleId, title) => {
-        showDeleteConfirm(
-            title || 'bài viết này',
-            handleDeleteAction,
-            articleId
-        );
-    };
-
-    const handleStatusChangeAction = async (data) => {
-        const { articleId, newStatus } = data;
-        const result = await changeArticleStatus(articleId, newStatus);
-
-        if (result.success) {
-            showSuccess('Thành công', result.message);
-        } else {
-            showError('Lỗi', result.message);
-        }
+        showDeleteConfirm(title || "bài viết này", async (id) => {
+            const result = await deleteArticle(id);
+            result.success ? showSuccess("Thành công", result.message) : showError("Lỗi", result.message);
+        }, articleId);
     };
 
     const handleStatusChange = (articleId, newStatus) => {
+        const label = statusOptions.find(o => o.value === newStatus)?.label || newStatus;
         showWarningConfirm(
-            'Xác nhận thay đổi trạng thái',
-            `Bạn có muốn thay đổi trạng thái bài viết thành "${statusLabels[newStatus]}"?`,
-            handleStatusChangeAction,
+            "Xác nhận thay đổi trạng thái",
+            `Bạn có muốn đổi trạng thái thành "${label}"?`,
+            async (data) => {
+                const result = await changeArticleStatus(data.articleId, data.newStatus);
+                result.success ? showSuccess("Thành công", result.message) : showError("Lỗi", result.message);
+            },
             { articleId, newStatus }
         );
     };
 
-    const handlePageChange = (page) => {
-        loadArticles(page);
-    };
+    const isLoading = isSearching ? searchLoading : loading;
+    const totalCount = isSearching ? searchTotal : pagination.totalElements;
 
-    const handleRetry = () => {
-        window.location.reload();
-    };
-
-    if (error) {
-        return <Error message={error} onRetry={handleRetry} />;
-    }
+    if (error && !isSearching) return <Error message={error} onRetry={() => window.location.reload()} />;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-            <div className="max-w-7xl mx-auto">
-                <div className="mb-8">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                                Tất cả bài viết
-                            </h1>
-                            <p className="text-gray-600">
-                                Quản lý và theo dõi tất cả nội dung
-                            </p>
-                        </div>
+        <div className="min-h-screen bg-gray-50 p-6">
+            <div className="max-w-7xl mx-auto space-y-5">
 
-                        {/* <div className="flex items-center space-x-3">
-                            <button className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2">
-                                <Filter className="w-4 h-4" />
-                                <span>Bộ lọc</span>
-                            </button>
-                            <button className="px-6 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all shadow-lg flex items-center space-x-2">
-                                <FileText className="w-4 h-4" />
-                                <span>Thêm bài viết</span>
-                            </button>
-                        </div> */}
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900">Tất cả bài viết</h1>
+                        <p className="text-sm text-gray-400 mt-0.5">Quản lý và theo dõi tất cả nội dung</p>
                     </div>
+                    <Link to="/manager/articles/create">
+                        <button className="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-sm font-medium rounded-xl transition-colors shadow-sm">
+                            <Plus className="w-4 h-4" />
+                            Thêm bài viết
+                        </button>
+                    </Link>
                 </div>
 
+                {/* Filter */}
                 <FilterBar
                     searchTerm={searchTerm}
                     onSearchChange={setSearchTerm}
-                // selectOptions={categories}
-                // selectValue={categoryFilter}
-                // onSelectChange={setCategoryFilter}
+                    placeholder="Tìm theo tiêu đề, nội dung..."
+                    selectOptions={statusOptions}
+                    selectValue={statusFilter}
+                    onSelectChange={setStatusFilter}
+                    total={isLoading ? undefined : filtered.length}
+                    label={isSearching ? `/ ${searchTotal} kết quả` : "bài viết"}
                 />
 
-                {loading ? (
+                {/* List */}
+                {isLoading ? (
                     <SimpleLoading />
                 ) : (
                     <>
                         <ArticlesList
-                            articles={articles}
+                            articles={filtered}
                             onDelete={handleDelete}
                             onStatusChange={handleStatusChange}
-                            loading={loading}
+                            loading={isLoading}
                         />
 
-                        {pagination.totalPages > 1 && (
+                        {/* Pagination — chỉ khi không search */}
+                        {!isSearching && statusFilter === "all" && pagination.totalPages > 1 && (
                             <Pagination
                                 currentPage={pagination.currentPage}
                                 totalPages={pagination.totalPages}
-                                onPageChange={handlePageChange}
+                                onPageChange={(page) => loadArticles(page)}
                             />
+                        )}
+
+                        {/* Empty state khi search */}
+                        {isSearching && filtered.length === 0 && !isLoading && (
+                            <div className="text-center py-16 text-gray-400">
+                                <p className="text-sm">Không tìm thấy bài viết nào cho "<span className="font-medium text-gray-600">{debouncedSearch}</span>"</p>
+                            </div>
                         )}
                     </>
                 )}
@@ -157,7 +150,7 @@ const AllArticles = () => {
                 message={alert.message}
                 isVisible={alert.isVisible}
                 onClose={hideAlert}
-                autoClose={true}
+                autoClose
                 duration={3000}
             />
 

@@ -11,63 +11,44 @@ import AuthorSection from "../../components/manager/article/AuthorSection";
 import CategorySection from "../../components/manager/article/CategorySection";
 import TagSection from "../../components/manager/article/TagSection";
 import LoadingOverlay from "../../components/manager/article/LoadingOverlay";
-import { Save, Eye, FileCheck } from "lucide-react";
+import { FileCheck, Loader2 } from "lucide-react";
 
 const AddArticle = () => {
     const { alert, hideAlert } = useAlert();
     const {
-        addArticleForm,
-        selectedTags,
-        newAuthor, setNewAuthor,
-        imagePreview,
-        isSubmitting,
-
-        handleAddArticleFormChange,
-        handleCategoryChange,
-        handleTagsChange,
-        addAuthors,
-        removeAuthors,
-        handleImageUpload,
-        removeImage,
-        handleSubmit
+        addArticleForm, selectedTags, newAuthor, setNewAuthor,
+        imagePreview, isSubmitting,
+        handleAddArticleFormChange, handleCategoryChange, handleTagsChange,
+        addAuthors, removeAuthors, handleImageUpload, removeImage, handleSubmit
     } = useArticle();
 
     const { categories } = useCategory();
     const { tags } = useTag();
 
+    const onSubmit = async () => {
+        await handleSubmit(false);
+    };
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-            <div className="max-w-7xl mx-auto">
-                <div className="mb-8">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-3xl font-bold text-gray-900 mb-2">Thêm bài báo mới</h1>
-                            <p className="text-gray-600">Tạo và xuất bản nội dung chất lượng cao</p>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                            <button
-                                onClick={() => handleSubmit(false)}
-                                disabled={isSubmitting}
-                                className="px-6 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all shadow-lg flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                <FileCheck className="w-4 h-4" />
-                                <span>{isSubmitting ? 'Đang lưu bài...' : 'Lưu bài báo'}</span>
-                            </button>
-                        </div>
-                    </div>
+        <div className="min-h-screen bg-gray-50">
+            <div className="max-w-7xl mx-auto px-6 py-6">
+
+                {/* Header */}
+                <div className="mb-6">
+                    <h1 className="text-2xl font-bold text-gray-900">Thêm bài viết mới</h1>
+                    <p className="text-sm text-gray-400 mt-0.5">Điền đầy đủ thông tin để xuất bản</p>
                 </div>
-
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2 space-y-6">
 
+                    {/* Main — col 2 */}
+                    <div className="lg:col-span-2 space-y-5">
                         <TitleSection
                             title={addArticleForm.title}
-                            onChange={(value) => handleAddArticleFormChange('title', value)}
+                            onChange={(v) => handleAddArticleFormChange("title", v)}
                         />
-
                         <ContentEditor
                             content={addArticleForm.content}
-                            onChange={(value) => handleAddArticleFormChange('content', value)}
+                            onChange={(v) => handleAddArticleFormChange("content", v)}
                         />
                     </div>
 
@@ -95,6 +76,18 @@ const AddArticle = () => {
                             selectedTags={selectedTags}
                             onTagChange={handleTagsChange}
                         />
+
+                        {/* Save button */}
+                        <button
+                            onClick={onSubmit}
+                            disabled={isSubmitting || !addArticleForm.title?.trim()}
+                            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-green-500 hover:bg-green-600 disabled:bg-gray-100 disabled:text-gray-300 text-white text-sm font-medium rounded-xl transition-all shadow-sm disabled:cursor-not-allowed"
+                        >
+                            {isSubmitting
+                                ? <><Loader2 className="w-4 h-4 animate-spin" /> Đang lưu...</>
+                                : <><FileCheck className="w-4 h-4" /> Lưu bài viết</>
+                            }
+                        </button>
                     </div>
                 </div>
             </div>
@@ -102,13 +95,9 @@ const AddArticle = () => {
             {isSubmitting && <LoadingOverlay />}
 
             <Alert
-                type={alert.type}
-                title={alert.title}
-                message={alert.message}
-                isVisible={alert.isVisible}
-                onClose={hideAlert}
-                autoClose={true}
-                duration={3000}
+                type={alert.type} title={alert.title}
+                message={alert.message} isVisible={alert.isVisible}
+                onClose={hideAlert} autoClose duration={3000}
             />
         </div>
     );

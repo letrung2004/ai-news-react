@@ -1,57 +1,53 @@
-import React from 'react';
-import { Image, Upload, X } from 'lucide-react';
+import React from "react";
+import { ImageIcon, Upload, X, RefreshCw } from "lucide-react";
 
-const FeaturedImage = ({
-    imagePreview,
-    onImageUpload,
-    onRemoveImage
-}) => {
-    return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="flex items-center justify-between p-4">
-                <h4 className="font-semibold text-gray-900 flex items-center space-x-2">
-                    <Image className="w-4 h-4 text-orange-600" />
-                    <span>Ảnh đại diện</span>
-                </h4>
+const FeaturedImage = ({ imagePreview, onImageUpload, onRemoveImage }) => (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="px-4 py-3 border-b border-gray-50 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+                <ImageIcon className="w-3.5 h-3.5 text-orange-500" />
+                <span className="text-xs font-medium text-gray-600">Ảnh đại diện</span>
             </div>
-
-            <div className="p-4">
-                {imagePreview ? (
-                    <div className="relative">
-                        <img
-                            src={imagePreview}
-                            alt="Featured"
-                            className="w-full h-32 object-cover rounded-lg"
-                        />
-                        <button
-                            onClick={onRemoveImage}
-                            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                        >
-                            <X className="w-3 h-3" />
-                        </button>
-                    </div>
-                ) : (
-                    <div
-                        onClick={() => document.getElementById('imageUpload').click()}
-                        className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-green-400 transition-colors cursor-pointer"
-                    >
-                        <Upload className="w-8 h-8 text-gray-400 mx-auto mb-3" />
-                        <p className="text-sm text-gray-600 mb-2">Kéo thả ảnh vào đây hoặc</p>
-                        <span className="text-green-500 text-sm hover:text-green-600 font-medium">
-                            Chọn ảnh từ máy tính
-                        </span>
-                        <input
-                            id="imageUpload"
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => onImageUpload(e.target.files[0])}
-                            className="hidden"
-                        />
-                    </div>
-                )}
-            </div>
+            {imagePreview && (
+                <button
+                    onClick={() => document.getElementById("featuredImageUpload").click()}
+                    className="text-xs text-green-600 hover:text-green-700 flex items-center gap-1"
+                >
+                    <RefreshCw className="w-3 h-3" /> Đổi ảnh
+                </button>
+            )}
         </div>
-    );
-};
+
+        <div className="p-4">
+            {imagePreview ? (
+                <div className="relative rounded-xl overflow-hidden">
+                    <img src={imagePreview} alt="Featured" className="w-full h-36 object-cover" />
+                    <button
+                        onClick={onRemoveImage}
+                        className="absolute top-2 right-2 p-1 bg-black/50 hover:bg-black/70 text-white rounded-lg transition-colors"
+                    >
+                        <X className="w-3.5 h-3.5" />
+                    </button>
+                </div>
+            ) : (
+                <div
+                    onClick={() => document.getElementById("featuredImageUpload").click()}
+                    className="border-2 border-dashed border-gray-200 hover:border-green-400 rounded-xl p-6 text-center cursor-pointer transition-colors group"
+                >
+                    <Upload className="w-6 h-6 text-gray-300 group-hover:text-green-400 mx-auto mb-2 transition-colors" />
+                    <p className="text-xs text-gray-400">Kéo thả hoặc</p>
+                    <p className="text-xs text-green-500 font-medium mt-0.5">Chọn ảnh từ máy tính</p>
+                </div>
+            )}
+            <input
+                id="featuredImageUpload"
+                type="file"
+                accept="image/*"
+                onChange={(e) => onImageUpload(e.target.files[0])}
+                className="hidden"
+            />
+        </div>
+    </div>
+);
 
 export default FeaturedImage;
