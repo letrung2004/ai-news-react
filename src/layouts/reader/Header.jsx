@@ -1,90 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "./../../hooks/useAuth";
 import { useCategory } from "../../hooks/useCategory";
 import {
     Settings, User, ChevronDown, HelpCircle,
-    LogOut, Shield, Activity, Search, X
+    LogOut, Shield, Activity
 } from "lucide-react";
+import SearchBar from "../../components/reader/SearchBar";
 
-// ─── SearchBar ────────────────────────────────────────────────
-const SearchBar = ({ onSearch }) => {
-    const [open, setOpen] = useState(false);
-    const [query, setQuery] = useState("");
-    const inputRef = useRef(null);
-    const wrapRef = useRef(null);
-    const navigate = useNavigate();
-
-    // Auto-focus khi mo
-    useEffect(() => {
-        if (open) inputRef.current?.focus();
-    }, [open]);
-
-    // Dong khi click ra ngoai
-    useEffect(() => {
-        if (!open) return;
-        const handler = (e) => {
-            if (wrapRef.current && !wrapRef.current.contains(e.target)) {
-                setOpen(false);
-                setQuery("");
-            }
-        };
-        document.addEventListener("mousedown", handler);
-        return () => document.removeEventListener("mousedown", handler);
-    }, [open]);
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!query.trim()) return;
-        if (onSearch) {
-            onSearch(query.trim());
-        } else {
-            navigate(`/search?q=${encodeURIComponent(query.trim())}`);
-        }
-        setOpen(false);
-        setQuery("");
-    };
-
-    const handleClose = () => { setOpen(false); setQuery(""); };
-
-    return (
-        <div ref={wrapRef} className="flex items-center">
-            {open ? (
-                <form onSubmit={handleSubmit} className="flex items-center gap-2">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
-                        <input
-                            ref={inputRef}
-                            value={query}
-                            onChange={(e) => setQuery(e.target.value)}
-                            placeholder="Tìm kiếm bài viết..."
-                            className="w-48 sm:w-64 text-sm border border-gray-300 rounded-full pl-9 pr-4 py-1.5 outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition-all bg-white"
-                        />
-                    </div>
-                    <button
-                        type="button"
-                        onClick={handleClose}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
-                        aria-label="Đóng tìm kiếm"
-                    >
-                        <X className="w-4 h-4" />
-                    </button>
-                </form>
-            ) : (
-                <button
-                    onClick={() => setOpen(true)}
-                    className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-green-600 transition-colors border border-gray-200 rounded-full px-3 py-1.5 hover:border-green-400 bg-gray-50 hover:bg-white"
-                    aria-label="Tìm kiếm"
-                >
-                    <Search className="w-4 h-4" />
-                    <span className="hidden md:inline font-medium">Tìm kiếm</span>
-                </button>
-            )}
-        </div>
-    );
-};
-
-// ─── Header ───────────────────────────────────────────────────
 const Header = () => {
     const { categories } = useCategory();
     const { user, logout } = useAuth();
@@ -113,18 +36,16 @@ const Header = () => {
 
     useEffect(() => {
         const handler = (e) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target))
                 setShowProfile(false);
-            }
         };
         document.addEventListener("mousedown", handler);
         return () => document.removeEventListener("mousedown", handler);
     }, []);
 
     useEffect(() => {
-        if (categories?.result?.length > 0) {
+        if (categories?.result?.length > 0)
             setActiveCategory(categories.result[0].name);
-        }
     }, [categories]);
 
     const renderUserAvatar = (size = "w-8 h-8") => (
@@ -146,16 +67,10 @@ const Header = () => {
                 <div className="py-2 max-w-7xl mx-auto flex justify-between items-center text-sm">
                     <div className="flex items-center space-x-4">
                         <span>Việt Nam</span>
-                        <span>
-                            {new Date().toLocaleDateString("vi-VN", {
-                                weekday: "long", year: "numeric",
-                                month: "2-digit", day: "2-digit",
-                            })}
-                        </span>
+                        <span>{new Date().toLocaleDateString("vi-VN", { weekday: "long", year: "numeric", month: "2-digit", day: "2-digit" })}</span>
                         <span>Về chúng tôi</span>
                         <span>Liên Hệ</span>
                     </div>
-
                     <div className="flex items-center space-x-4">
                         {user ? (
                             <div className="relative" ref={dropdownRef}>
@@ -164,12 +79,9 @@ const Header = () => {
                                     className="flex items-center space-x-3 p-2 hover:bg-gray-700 rounded-lg transition-colors"
                                 >
                                     {renderUserAvatar()}
-                                    <span className="hidden sm:block text-sm font-medium text-white">
-                                        {user.username}
-                                    </span>
+                                    <span className="hidden sm:block text-sm font-medium text-white">{user.username}</span>
                                     <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${showProfile ? "rotate-180" : ""}`} />
                                 </button>
-
                                 {showProfile && (
                                     <div className="absolute top-full right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200 py-2" style={{ zIndex: 99999 }}>
                                         <div className="px-4 py-3 border-b border-gray-200">
@@ -177,9 +89,7 @@ const Header = () => {
                                         </div>
                                         <div className="py-1">
                                             {profileMenuItems.map((item, i) => (
-                                                <button
-                                                    key={i}
-                                                    onClick={item.action}
+                                                <button key={i} onClick={item.action}
                                                     className={`w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center space-x-3 transition-colors ${item.danger ? "text-red-600 hover:bg-red-50" : "text-gray-700"}`}
                                                 >
                                                     <item.icon className="w-4 h-4" />
@@ -215,35 +125,29 @@ const Header = () => {
             }`}>
                 <div className="max-w-7xl mx-auto px-6">
 
-                    {/* Logo + SearchBar — hien khi CHUA scroll */}
+                    {/* Logo + SearchBar — khi CHƯA scroll */}
                     {!isScrolled && (
                         <div className="flex items-center justify-between py-5">
-                            {/* Spacer trai */}
                             <div className="flex-1" />
-
-                            {/* Logo giua */}
                             <Link to="/" className="flex-shrink-0">
                                 <h1 className="text-5xl font-bold tracking-tight">
                                     <span className="text-green-500">MAG</span>
                                     <span className="text-gray-800">NEWS</span>
                                 </h1>
                             </Link>
-
-                            {/* SearchBar phai */}
+                            {/* SearchBar width cố định bên phải */}
                             <div className="flex-1 flex justify-end">
-                                <SearchBar />
+                                <div className="w-64">
+                                    <SearchBar />
+                                </div>
                             </div>
                         </div>
                     )}
 
                     {/* Navigation */}
                     <nav className={`transition-all duration-300 ${
-                        isScrolled
-                            ? "flex items-center justify-between py-3"
-                            : "flex justify-center pb-4"
+                        isScrolled ? "flex items-center justify-between py-3" : "flex justify-center pb-4"
                     }`}>
-
-                        {/* Logo nho khi scroll */}
                         {isScrolled && (
                             <Link to="/" className="flex-shrink-0 mr-6">
                                 <h1 className="text-2xl font-bold">
@@ -253,7 +157,6 @@ const Header = () => {
                             </Link>
                         )}
 
-                        {/* Categories */}
                         <div className="flex space-x-1 overflow-x-auto no-scrollbar flex-1">
                             {categories?.result?.map((category) => (
                                 <Link
@@ -272,9 +175,9 @@ const Header = () => {
                             ))}
                         </div>
 
-                        {/* SearchBar ben phai nav — CHI hien khi da scroll */}
+                        {/* SearchBar khi đã scroll — width vừa phải */}
                         {isScrolled && (
-                            <div className="flex-shrink-0 ml-4">
+                            <div className="flex-shrink-0 ml-4 w-60">
                                 <SearchBar />
                             </div>
                         )}
@@ -282,7 +185,6 @@ const Header = () => {
                 </div>
             </header>
 
-            {/* Spacer khi scroll de tranh content bi che */}
             {isScrolled && <div className="h-16" />}
         </>
     );

@@ -24,6 +24,7 @@ import CommentManagement from './pages/manager/CommentManagement'
 import SystemSettings from './pages/manager/SystemSettings'
 import Analytics from './pages/manager/Analytics'
 import UpdateArticle from './pages/manager/UpdateArticle'
+import SearchPage from './components/reader/SearchPage'
 
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
               <Route index element={<HomePage />} />
               <Route path="/detail/:articleSlug" element={<ArticlePage />} />
               <Route path="/category/:categorySlug" element={<ListArticle />} />
+              <Route path="/search" element={<SearchPage />} />
             </Route>
 
             {/* admin route */}

@@ -68,4 +68,12 @@ export const articleService = {
         return response.data.result;
     },
 
+    //search article
+    searchArticles: async (keyword) => {
+        const response = await API.get(
+            `${ENDPOINTS.NEWS.SEARCH}?keyword=${encodeURIComponent(keyword)}`
+        );
+        return response.data.result; // { articles, totalElements, tookInMillis }
+    },
+
 };

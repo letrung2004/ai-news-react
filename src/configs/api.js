@@ -17,7 +17,8 @@ export const ENDPOINTS = {
         GET_ALL_TAGS: '/content/tag',
         GET_ALL_ARTICLE_BY_CATEGORY: (categorySlug) => `/content/article/all/${categorySlug}`,
         SEND_QUESTION: '/ai/ask', // chỉnh lại chỗ này đã update chat rồi
-        RECOMMENDATION: 'content/article/recommendations'
+        RECOMMENDATION: 'content/article/recommendations',
+        SEARCH: '/content/article/search',
 
 
     },
