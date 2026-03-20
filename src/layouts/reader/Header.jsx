@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "./../../hooks/useAuth";
 import { useCategory } from "../../hooks/useCategory";
 import {
@@ -11,6 +11,7 @@ import SearchBar from "../../components/reader/SearchBar";
 const Header = () => {
     const { categories } = useCategory();
     const { user, logout } = useAuth();
+      const navigate = useNavigate();
 
     const [activeCategory, setActiveCategory] = useState(null);
     const [isScrolled, setIsScrolled] = useState(false);
@@ -21,9 +22,7 @@ const Header = () => {
     const handleLogout = () => { logout(); setShowProfile(false); };
 
     const profileMenuItems = [
-        { icon: User,       label: "Hồ sơ cá nhân",    action: () => console.log("Profile") },
-        { icon: Settings,   label: "Cài đặt tài khoản", action: () => console.log("Settings") },
-        { icon: Shield,     label: "Bảo mật",           action: () => console.log("Security") },
+        { icon: User,       label: "Hồ sơ cá nhân", action: () => { navigate("/profile-user"); setShowProfile(false); } },
         { icon: HelpCircle, label: "Trợ giúp",          action: () => console.log("Help") },
         { icon: LogOut,     label: "Đăng xuất",         action: handleLogout, danger: true },
     ];

@@ -1,5 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Eye } from "lucide-react";
 
 const SideArticles = ({ articles }) => (
     <div className="flex flex-col gap-4 h-full">
@@ -12,18 +13,25 @@ const SideArticles = ({ articles }) => (
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
                         <span className="inline-block bg-green-500 text-xs font-semibold px-2 py-0.5 rounded mb-2 w-fit uppercase">
-                            {article.category?.name || 'Tin tức'}
+                            {article.category?.name || "Tin tức"}
                         </span>
                         <h3 className="text-sm font-bold line-clamp-2 leading-snug group-hover:text-green-300 transition-colors mb-1.5">
                             {article.title}
                         </h3>
-                        {/* SUMMARY - 1 dòng */}
                         {article.summary && (
                             <p className="text-xs text-gray-300 line-clamp-1 mb-1.5">{article.summary}</p>
                         )}
                         <div className="flex items-center justify-between text-xs text-gray-400">
-                            <span>{article.authors?.[0] || 'Admin'}</span>
-                            <span>{article.created}</span>
+                            <span>{article.authors?.[0] || "Admin"}</span>
+                            <div className="flex items-center gap-2">
+                                <span>{article.created}</span>
+                                {article.viewCount != null && (
+                                    <span className="flex items-center gap-1">
+                                        <Eye className="w-3 h-3" />
+                                        {article.viewCount.toLocaleString("vi-VN")}
+                                    </span>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

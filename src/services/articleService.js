@@ -76,12 +76,36 @@ export const articleService = {
         return response.data.result; // { articles, totalElements, tookInMillis }
     },
 
-    // Thêm vào articleService
+    // 
     getAllArticleForStats: async () => {
         const response = await AUTH_REQUEST.get(
             `${ENDPOINTS.ADMIN.GET_ALL_ARTICLE}?page=1&size=9999`
         );
         return response.data.result;
     },
+
+    // get trending article
+    getTrendingArticle: async ()=>{
+        const response = await API.get(
+            `${ENDPOINTS.NEWS.TRENDING_ARTICLE}?page=1&size=5`
+        );
+        return response.data.result;
+    },
+
+    // bookmark/ un bookmark article
+    bookmarkArticle : async (articleId) =>{
+        const response = await AUTH_REQUEST.post(
+            ENDPOINTS.NEWS.BOOKMARK_ARTICLE(articleId),
+        );
+        return response.data;
+    },
+
+    // check bookmark 
+    getBookmarkArticle : async (articleId) =>{
+        const response = await AUTH_REQUEST.get(
+            ENDPOINTS.NEWS.BOOKMARK_ARTICLE(articleId),
+        );
+        return response.data;
+    }
 
 };

@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Eye } from "lucide-react";
 
 const FeaturedArticle = ({ article }) => {
     if (!article) return (
@@ -21,7 +22,6 @@ const FeaturedArticle = ({ article }) => {
                     <h2 className="text-2xl font-bold leading-tight mb-2 group-hover:text-green-300 transition-colors">
                         {article.title}
                     </h2>
-                    {/* SUMMARY */}
                     {article.summary && (
                         <p className="text-sm text-gray-200 line-clamp-2 mb-3 leading-relaxed">
                             {article.summary}
@@ -31,6 +31,15 @@ const FeaturedArticle = ({ article }) => {
                         <span>{article.authors?.length > 0 ? article.authors.join(", ") : "Admin"}</span>
                         <span>·</span>
                         <span>{article.created}</span>
+                        {article.viewCount != null && (
+                            <>
+                                <span>·</span>
+                                <span className="flex items-center gap-1">
+                                    <Eye className="w-3 h-3" />
+                                    {article.viewCount.toLocaleString("vi-VN")}
+                                </span>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

@@ -1,12 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Bookmark, BookmarkCheck } from "lucide-react";
 import { sanitizeHtmlContent } from "../../utils/helpers";
 import SocialShareComponent from "./SocialShareComponent";
+import { articleService } from "../../services/articleService";
+import { useAuth } from "../../hooks/useAuth";
 
-// CSS tối thiểu — chỉ những thứ Tailwind không hỗ trợ:
-// 1. Drop cap (::first-letter pseudo)
-// 2. article-content styles cho HTML từ CKEditor (dangerouslySetInnerHTML)
-// 3. audio accent-color
-// 4. ::before pseudo cho end-rule
 const PROSE_STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,wght@0,400;1,400&display=swap');
 
@@ -35,12 +33,39 @@ const PROSE_STYLES = `
 `;
 
 const ArticleDetail = ({ article }) => {
+    const { user } = useAuth();
+    const [bookmarked, setBookmarked] = useState(false);
+    const [bookmarkLoading, setBookmarkLoading] = useState(false);
+
+    // Check trạng thái bookmark khi load
+    useEffect(() => {
+        if (!user || !article?.id) return;
+        articleService.getBookmarkArticle(article.id)
+            .then(res => setBookmarked(res.result))
+            .catch(() => {});
+    }, [user, article?.id]);
+
     const formatDate = (dateStr) => {
-        if (!dateStr) return '';
-        return new Date(dateStr).toLocaleDateString('vi-VN', {
-            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-            timeZone: 'UTC'
+        if (!dateStr) return "";
+        return new Date(dateStr).toLocaleDateString("vi-VN", {
+            weekday: "long", year: "numeric", month: "long", day: "numeric",
+            timeZone: "UTC"
         });
+    };
+
+    const handleBookmark = async () => {
+        if (!user) return; // chưa đăng nhập thì không làm gì
+        if (bookmarkLoading) return;
+        setBookmarkLoading(true);
+        try {
+            const res = await articleService.bookmarkArticle(article.id);
+            // result: true = đã bookmark, false = đã bỏ bookmark
+            setBookmarked(res.result);
+        } catch (err) {
+            console.error("Bookmark error:", err);
+        } finally {
+            setBookmarkLoading(false);
+        }
     };
 
     return (
@@ -50,7 +75,7 @@ const ArticleDetail = ({ article }) => {
             {/* Title */}
             <h1
                 className="text-4xl font-bold leading-tight tracking-tight text-gray-900 mb-5"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 'clamp(1.85rem, 3vw, 2.7rem)' }}
+                style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "clamp(1.85rem, 3vw, 2.7rem)" }}
             >
                 {article.title}
             </h1>
@@ -58,7 +83,7 @@ const ArticleDetail = ({ article }) => {
             {/* Meta row */}
             <div className="flex items-center gap-4 py-3 border-t border-b border-gray-200 mb-6">
                 <span className="text-sm font-medium text-gray-900">
-                    {article.authors?.length > 0 ? article.authors.join(', ') : 'Biên tập viên'}
+                    {article.authors?.length > 0 ? article.authors.join(", ") : "Biên tập viên"}
                 </span>
                 <span className="w-1 h-1 rounded-full bg-gray-300 flex-shrink-0" />
                 <span className="text-xs text-gray-400">{formatDate(article.publishDate)}</span>
@@ -66,9 +91,32 @@ const ArticleDetail = ({ article }) => {
                     <>
                         <span className="w-1 h-1 rounded-full bg-gray-300 flex-shrink-0" />
                         <span className="text-xs text-gray-400">
-                            {article.viewCount.toLocaleString('vi-VN')} lượt xem
+                            {article.viewCount.toLocaleString("vi-VN")} lượt xem
                         </span>
                     </>
+                )}
+
+                {/* Bookmark button */}
+                {user && (
+                    <button
+                        onClick={handleBookmark}
+                        disabled={bookmarkLoading}
+                        title={bookmarked ? "Bỏ lưu" : "Lưu bài viết"}
+                        className={`ml-auto flex items-center gap-1.5 text-sm font-medium px-4 py-1.5 rounded-full border-2 transition-all ${
+                            bookmarked
+                                ? "bg-green-500 border-green-500 text-white hover:bg-green-600 hover:border-green-600"
+                                : "bg-white border-gray-300 text-gray-600 hover:border-green-500 hover:text-green-600"
+                        } disabled:opacity-50`}
+                    >
+                        {bookmarkLoading ? (
+                            <span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                        ) : bookmarked ? (
+                            <BookmarkCheck className="w-4 h-4" />
+                        ) : (
+                            <Bookmark className="w-4 h-4" />
+                        )}
+                        {bookmarked ? "Đã lưu" : "Lưu bài"}
+                    </button>
                 )}
             </div>
 
@@ -76,7 +124,7 @@ const ArticleDetail = ({ article }) => {
             {article.summary && (
                 <div
                     className="mb-7 px-6 py-5 bg-gray-50 border-l-4 border-green-500 rounded-r-lg text-gray-700 leading-relaxed italic"
-                    style={{ fontFamily: "'Source Serif 4', Georgia, serif", fontSize: '1.1rem' }}
+                    style={{ fontFamily: "'Source Serif 4', Georgia, serif", fontSize: "1.1rem" }}
                 >
                     {article.summary}
                 </div>
@@ -89,7 +137,7 @@ const ArticleDetail = ({ article }) => {
                         src={article.featuredImage}
                         alt={article.title}
                         className="w-full object-cover object-top"
-                        style={{ height: '440px' }}
+                        style={{ height: "440px" }}
                     />
                     <p className="text-xs text-gray-400 italic text-center mt-2 pb-1">
                         {article.title}

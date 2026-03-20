@@ -9,18 +9,18 @@ export const ENDPOINTS = {
     NEWS: {
         UPLOAD_IMAGE: '/content/image/upload',
         GET_CATEGORIES: '/content/category',
-        GET_ALL_ARTICLE: '/content/article/all',
-        GET_DETAIL_ARTICLE: slug => `/content/article/detail-by-slug/${slug}`,
+        GET_ALL_ARTICLE: '/content/articles/all',
+        GET_DETAIL_ARTICLE: slug => `/content/articles/detail-by-slug/${slug}`,
         GET_ALL_CATEGORIES: '/content/category',
         CREATE_COMMENT: '/content/comments',
         GET_COMMENTS: (articleId) => `/content/comments/article/${articleId}`,
         GET_ALL_TAGS: '/content/tag',
-        GET_ALL_ARTICLE_BY_CATEGORY: (categorySlug) => `/content/article/all/${categorySlug}`,
+        GET_ALL_ARTICLE_BY_CATEGORY: (categorySlug) => `/content/articles/all/${categorySlug}`,
         SEND_QUESTION: '/ai/ask', // chỉnh lại chỗ này đã update chat rồi
-        RECOMMENDATION: 'content/article/recommendations',
-        SEARCH: '/content/article/search',
-
-
+        RECOMMENDATION: 'content/articles/recommendations',
+        SEARCH: '/content/articles/search',
+        TRENDING_ARTICLE: '/content/articles/trending',
+        BOOKMARK_ARTICLE: (articleId) => `/content/articles/${articleId}/bookmark`,
     },
     ADMIN: {
         CREATE_CATEGORY: '/content/category/create',
@@ -29,11 +29,11 @@ export const ENDPOINTS = {
         CREATE_TAG: '/content/tag/create',
         DELETE_TAG: tagId => `/content/tag/delete/${tagId}`,
 
-        CREATE_ARTICLE: '/content/article/create',
-        DELETE_ARTICLE: articleId => `/content/article/delete/${articleId}`,
-        GET_ALL_ARTICLE: '/content/article/all-status',
-        UPDATE_ARTICLE: articleId => `/content/article/update/${articleId}`,
-        UPDATE_ARTICLE_STATUS: articleId => `/content/article/update-status/${articleId}`,
+        CREATE_ARTICLE: '/content/articles/create',
+        DELETE_ARTICLE: articleId => `/content/articles/delete/${articleId}`,
+        GET_ALL_ARTICLE: '/content/articles/all-status',
+        UPDATE_ARTICLE: articleId => `/content/articles/update/${articleId}`,
+        UPDATE_ARTICLE_STATUS: articleId => `/content/articles/update-status/${articleId}`,
 
         APPROVE_COMMENT: commentId => `/content/comments/${commentId}/approve`,
         DELETE_COMMENT: commentId => `/content/comments/${commentId}`,

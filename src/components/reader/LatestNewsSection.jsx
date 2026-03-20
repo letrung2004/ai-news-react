@@ -1,5 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Eye } from "lucide-react";
+import PopularArticles from "./PopularArticles";
 
 const ArticleCard = ({ article }) => (
     <Link
@@ -13,7 +15,7 @@ const ArticleCard = ({ article }) => (
         </div>
         <div className="p-4 flex flex-col flex-grow">
             <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded mb-2 w-fit uppercase">
-                {article.category?.name || 'Tin tức'}
+                {article.category?.name || "Tin tức"}
             </span>
             <h3 className="font-bold text-gray-900 text-sm leading-snug line-clamp-2 mb-2 group-hover:text-green-600 transition-colors">
                 {article.title}
@@ -24,40 +26,15 @@ const ArticleCard = ({ article }) => (
                 </p>
             )}
             <div className="flex items-center justify-between text-xs text-gray-400 mt-auto pt-2 border-t border-gray-50">
-                <span className="font-medium text-gray-500">{article.authors?.[0] || 'Admin'}</span>
-                <span>{article.created}</span>
-            </div>
-        </div>
-    </Link>
-);
-
-// Style giống PopularArticles — có ảnh + rank number
-const SidebarItem = ({ article, rank }) => (
-    <Link
-        to={`/detail/${article.slug}`}
-        state={{ articleSlug: article.slug }}
-        className="block group"
-    >
-        <div className="flex items-start gap-3 py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 -mx-2 px-2 rounded transition-colors">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-green-500 text-white text-xs font-bold flex items-center justify-center mt-1">
-                {rank}
-            </span>
-            <div className="flex gap-3 flex-1 min-w-0">
-                <img
-                    src={article.featuredImage}
-                    alt={article.title}
-                    className="flex-shrink-0 w-20 h-[68px] rounded-lg object-cover group-hover:scale-105 transition-transform duration-200"
-                />
-                <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-medium text-gray-900 group-hover:text-green-600 transition-colors line-clamp-2 leading-tight mb-2">
-                        {article.title}
-                    </h4>
-                    <div className="flex items-center justify-between text-xs text-gray-500">
-                        <span className="bg-gray-100 px-2 py-1 rounded-full font-medium">
-                            {article.category?.name || 'Tin tức'}
+                <span className="font-medium text-gray-500">{article.authors?.[0] || "Admin"}</span>
+                <div className="flex items-center gap-2">
+                    {article.viewCount != null && (
+                        <span className="flex items-center gap-1">
+                            <Eye className="w-3 h-3" />
+                            {article.viewCount.toLocaleString("vi-VN")}
                         </span>
-                        <span>{article.created}</span>
-                    </div>
+                    )}
+                    <span>{article.created}</span>
                 </div>
             </div>
         </div>
@@ -66,7 +43,6 @@ const SidebarItem = ({ article, rank }) => (
 
 const LatestNewsSection = ({ articles, hasMore, loadingMore, onLoadMore }) => {
     const safeArticles = articles || [];
-    const sidebarArticles = safeArticles.slice(0, 5);
 
     return (
         <section className="mt-10">
@@ -77,7 +53,6 @@ const LatestNewsSection = ({ articles, hasMore, loadingMore, onLoadMore }) => {
             </div>
 
             <div className="grid grid-cols-12 gap-6">
-                {/* Grid cards + nút xem thêm */}
                 <div className="col-span-12 lg:col-span-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                         {safeArticles.length > 0 ? (
@@ -99,7 +74,6 @@ const LatestNewsSection = ({ articles, hasMore, loadingMore, onLoadMore }) => {
                         )}
                     </div>
 
-                    {/* Nút xem thêm — nằm dưới grid */}
                     {hasMore && (
                         <div className="flex justify-center mt-8">
                             <button
@@ -112,7 +86,7 @@ const LatestNewsSection = ({ articles, hasMore, loadingMore, onLoadMore }) => {
                                         <span className="animate-spin inline-block w-4 h-4 border-b-2 border-current rounded-full" />
                                         Đang tải...
                                     </>
-                                ) : 'Xem thêm'}
+                                ) : "Xem thêm"}
                             </button>
                         </div>
                     )}
@@ -121,19 +95,8 @@ const LatestNewsSection = ({ articles, hasMore, loadingMore, onLoadMore }) => {
                     )}
                 </div>
 
-                {/* Sidebar Phổ biến nhất */}
                 <div className="col-span-12 lg:col-span-4">
-                    <div className="bg-white rounded-lg shadow-md p-6 sticky top-24">
-                        <div className="flex items-center mb-4">
-                            <div className="w-1 h-6 bg-green-600 rounded-full mr-3" />
-                            <h3 className="text-lg font-bold text-gray-900">Phổ biến nhất</h3>
-                        </div>
-                        <div className="space-y-1">
-                            {sidebarArticles.map((article, i) => (
-                                <SidebarItem key={article.id || i} article={article} rank={i + 1} />
-                            ))}
-                        </div>
-                    </div>
+                    <PopularArticles limit={5} />
                 </div>
             </div>
         </section>
