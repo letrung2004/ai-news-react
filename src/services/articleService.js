@@ -106,6 +106,13 @@ export const articleService = {
             ENDPOINTS.NEWS.BOOKMARK_ARTICLE(articleId),
         );
         return response.data;
-    }
+    },
+
+    getTraffic: async (days = 90) => {
+        const response = await AUTH_REQUEST.get(
+            `${ENDPOINTS.ADMIN.GET_TRAFFIC}?days=${days}`
+        );
+        return response.data;
+    },
 
 };

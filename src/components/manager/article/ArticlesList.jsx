@@ -172,7 +172,10 @@ const ArticlesList = ({ articles, onDelete, onStatusChange, loading }) => {
 
             {/* Click outside to close dropdown */}
             {openDropdown && (
-                <div className="fixed inset-0 z-10" onClick={() => setOpenDropdown(null)} />
+                <div
+                    className="absolute right-0 top-10 w-48 bg-white rounded-xl shadow-lg border border-gray-100 z-20 py-1"
+                    onClick={(e) => e.stopPropagation()}
+                />
             )}
         </div>
     );

@@ -16,7 +16,7 @@ export const ENDPOINTS = {
         GET_COMMENTS: (articleId) => `/content/comments/article/${articleId}`,
         GET_ALL_TAGS: '/content/tag',
         GET_ALL_ARTICLE_BY_CATEGORY: (categorySlug) => `/content/articles/all/${categorySlug}`,
-        SEND_QUESTION: '/ai/ask', // chỉnh lại chỗ này đã update chat rồi
+        SEND_QUESTION: (articleId) => `/content/articles/${articleId}/ask`,
         RECOMMENDATION: 'content/articles/recommendations',
         SEARCH: '/content/articles/search',
         TRENDING_ARTICLE: '/content/articles/trending',
@@ -43,6 +43,8 @@ export const ENDPOINTS = {
         GET_ALL_USER: '/identity/users',
         GET_USER: userId => `/identity/users/${userId}`,
         UPDATE_USER: userId => `/identity/users/${userId}`,
+        GET_TRAFFIC: '/content/articles/stats/traffic',
+
 
     }
 };

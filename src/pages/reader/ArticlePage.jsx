@@ -113,7 +113,7 @@ const ArticlePage = () => {
                 )}
             </div>
 
-            <Chatbot articleId={article?.id} />
+            {article && <Chatbot articleId={article.id} />}
             <Alert
                 type={alert.type}
                 title={alert.title}

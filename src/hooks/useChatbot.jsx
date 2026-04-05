@@ -10,7 +10,10 @@ const useChatbot = () => {
         setLoading(true);
         try {
             const response = await chatbotService.sendQuestion(questionData);
-            setConversation((prev) => [...prev, { question: questionData.question, answer: response.result.answer }]);
+            setConversation((prev) => [...prev, {
+                question: questionData.question,
+                answer: response.result
+            }]);
         } catch (error) {
             const errorMessage = error.message || 'Có lỗi xảy ra';
             setError(errorMessage);
