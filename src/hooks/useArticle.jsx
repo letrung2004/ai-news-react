@@ -235,6 +235,66 @@ export const useArticle = () => {
         }
     };
 
+    const crawArticlesByCategory = async (crawRequest) => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const response = await articleService.crawArticles(crawRequest);
+
+            return {
+                success: true,
+                data: {
+                    status: response.status,
+                    message: response.message,
+                    limit: response.limit,
+                    totalRequested: response.totalRequested,
+                    totalValid: response.totalValid,
+                    categories: response.categories || []
+                }
+            };
+
+        } catch (error) {
+            console.error("Error crawling articles:", error);
+
+            const errorMessage =
+                error.response?.data?.message ||
+                error.message ||
+                'Có lỗi xảy ra khi crawl bài báo';
+
+            setError(errorMessage);
+
+            return {
+                success: false,
+                message: errorMessage
+            };
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const getListCategoryCraw = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const response = await articleService.listCategoryCraw();
+
+            return {
+                success: true,
+                data: response.result || response // Tùy vào structure response của bạn
+            };
+
+        } catch (error) {
+            console.error("Error fetching crawl categories:", error);
+            const errorMessage = error.message || 'Có lỗi xảy ra khi tải danh sách danh mục';
+            setError(errorMessage);
+            return { success: false, message: errorMessage };
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     useEffect(() => {
         return () => {
@@ -274,5 +334,8 @@ export const useArticle = () => {
         changeArticleStatus,
         deleteArticle,
         updateArticle,
+
+        crawArticlesByCategory,
+        getListCategoryCraw,
     };
 };

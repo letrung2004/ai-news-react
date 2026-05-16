@@ -45,6 +45,7 @@ export const ENDPOINTS = {
         UPDATE_USER: userId => `/identity/users/${userId}`,
         GET_TRAFFIC: '/content/articles/stats/traffic',
 
-
+        CRAW_ARTICLES_BY_CATEGORY: '/content/admin/crawler/trigger',
+        LIST_CATEGORY_CRAW: '/content/admin/crawler/categories',
     }
 };

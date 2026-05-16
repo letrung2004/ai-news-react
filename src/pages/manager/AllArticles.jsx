@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { Plus, Download } from "lucide-react"; // ← Thêm Download icon
 
 import FilterBar from "../../components/manager/FilterBar";
 import Pagination from "../../components/Pagination";
@@ -14,6 +14,7 @@ import { useArticle } from "../../hooks/useArticle";
 import { useArticleSearch } from "../../hooks/useArticleSearch";
 import useAlert from "../../hooks/useAlert";
 import useConfirmDialog from "../../hooks/useConfirmDialog";
+import CrawlerDialog from "../../components/manager/article/CrawlerDialog";
 
 const useDebounce = (value, delay = 300) => {
     const [debounced, setDebounced] = useState(value);
@@ -33,25 +34,38 @@ const statusOptions = [
 ];
 
 const AllArticles = () => {
-    const [searchTerm, setSearchTerm]     = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
+    
+    // ✅ State cho Crawler Dialog
+    const [showCrawler, setShowCrawler] = useState(false);
+    const [crawlCategories, setCrawlCategories] = useState([]);
+    const [loadingCategories, setLoadingCategories] = useState(false);
 
     const { alert, showSuccess, showError, hideAlert } = useAlert();
     const { confirmDialog, handleConfirm, handleCancel, showDeleteConfirm, showWarningConfirm } = useConfirmDialog();
-    const { articles, pagination, loading, error, loadArticles, changeArticleStatus, deleteArticle } = useArticle();
+    
+    const { 
+        articles, 
+        pagination, 
+        loading, 
+        error, 
+        loadArticles, 
+        changeArticleStatus, 
+        deleteArticle,
+        crawArticlesByCategory,  // ← Đã có sẵn
+        getListCategoryCraw      // ← Mới thêm
+    } = useArticle();
 
     const debouncedSearch = useDebounce(searchTerm, 400);
     const isSearching = debouncedSearch.trim().length > 0;
 
-    // Gọi API search khi có keyword
     const { results: searchResults, totalElements: searchTotal, loading: searchLoading } = useArticleSearch(debouncedSearch);
 
     useEffect(() => { loadArticles(1); }, []);
 
-    // Nguồn data: search results hoặc articles thường
     const sourceArticles = isSearching ? searchResults : (articles || []);
 
-    // Filter status client-side trên kết quả hiện tại
     const filtered = useMemo(() => {
         return sourceArticles.filter(a =>
             statusFilter === "all" || a.status === statusFilter
@@ -78,6 +92,45 @@ const AllArticles = () => {
         );
     };
 
+    // ✅ Handler mở Crawler Dialog
+    const handleOpenCrawler = async () => {
+        setLoadingCategories(true);
+        setShowCrawler(true);
+        
+        const result = await getListCategoryCraw();
+        
+        if (result.success) {
+            // Giả sử response trả về { total: 10, categories: [...] }
+            const categoriesData = result.data.categories || result.data || [];
+            setCrawlCategories(categoriesData);
+        } else {
+            showError("Lỗi", result.message || "Không thể tải danh sách danh mục");
+            setShowCrawler(false);
+        }
+        
+        setLoadingCategories(false);
+    };
+
+    // ✅ Handler xác nhận crawl
+    const handleConfirmCrawl = async (crawRequest) => {
+        const result = await crawArticlesByCategory(crawRequest);
+        
+        if (result.success) {
+            showSuccess(
+                "Thành công", 
+                result.data.message || "Đã gửi lệnh crawl! Hệ thống đang xử lý dưới nền."
+            );
+            setShowCrawler(false);
+            
+            // Reload articles sau 2s để user thấy bài mới (nếu crawl nhanh)
+            setTimeout(() => {
+                loadArticles(1);
+            }, 2000);
+        } else {
+            showError("Lỗi", result.message || "Không thể crawl bài viết");
+        }
+    };
+
     const isLoading = isSearching ? searchLoading : loading;
     const totalCount = isSearching ? searchTotal : pagination.totalElements;
 
@@ -93,12 +146,26 @@ const AllArticles = () => {
                         <h1 className="text-2xl font-bold text-gray-900">Tất cả bài viết</h1>
                         <p className="text-sm text-gray-400 mt-0.5">Quản lý và theo dõi tất cả nội dung</p>
                     </div>
-                    <Link to="/manager/articles/create">
-                        <button className="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-sm font-medium rounded-xl transition-colors shadow-sm">
-                            <Plus className="w-4 h-4" />
-                            Thêm bài viết
+                    
+                    {/* ✅ Buttons Group */}
+                    <div className="flex items-center gap-3">
+                        {/* Nút Crawl */}
+                        <button 
+                            onClick={handleOpenCrawler}
+                            className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-xl transition-colors shadow-sm"
+                        >
+                            <Download className="w-4 h-4" />
+                            Crawl bài viết
                         </button>
-                    </Link>
+
+                        {/* Nút Thêm bài viết */}
+                        <Link to="/manager/articles/create">
+                            <button className="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-sm font-medium rounded-xl transition-colors shadow-sm">
+                                <Plus className="w-4 h-4" />
+                                Thêm bài viết
+                            </button>
+                        </Link>
+                    </div>
                 </div>
 
                 {/* Filter */}
@@ -125,7 +192,6 @@ const AllArticles = () => {
                             loading={isLoading}
                         />
 
-                        {/* Pagination — chỉ khi không search */}
                         {!isSearching && statusFilter === "all" && pagination.totalPages > 1 && (
                             <Pagination
                                 currentPage={pagination.currentPage}
@@ -134,7 +200,6 @@ const AllArticles = () => {
                             />
                         )}
 
-                        {/* Empty state khi search */}
                         {isSearching && filtered.length === 0 && !isLoading && (
                             <div className="text-center py-16 text-gray-400">
                                 <p className="text-sm">Không tìm thấy bài viết nào cho "<span className="font-medium text-gray-600">{debouncedSearch}</span>"</p>
@@ -143,6 +208,14 @@ const AllArticles = () => {
                     </>
                 )}
             </div>
+
+            <CrawlerDialog
+                isVisible={showCrawler}
+                onClose={() => setShowCrawler(false)}
+                onConfirm={handleConfirmCrawl}
+                categories={crawlCategories}
+                loading={loadingCategories}
+            />
 
             <Alert
                 type={alert.type}

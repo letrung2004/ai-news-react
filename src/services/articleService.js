@@ -115,4 +115,19 @@ export const articleService = {
         return response.data;
     },
 
+
+    crawArticles: async (crawRequestData) => {
+    const response = await AUTH_REQUEST.post(
+        ENDPOINTS.ADMIN.CRAW_ARTICLES_BY_CATEGORY,
+        crawRequestData
+    );
+
+        return response.data;
+    },
+
+    listCategoryCraw: async ()=>{
+        const response = await AUTH_REQUEST.get(ENDPOINTS.ADMIN.LIST_CATEGORY_CRAW);
+        return response.data;
+    },
+
 };
