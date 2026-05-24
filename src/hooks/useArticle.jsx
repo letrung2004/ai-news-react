@@ -237,7 +237,6 @@ export const useArticle = () => {
 
     const retryAiArticle = async (articleId) => {
         try {
-            setLoading(true);
             setError(null);
 
             const res = await articleService.retryAi(articleId);
@@ -252,8 +251,6 @@ export const useArticle = () => {
             const errorMessage = error.message || 'Có lỗi xảy ra khi yêu cầu cập nhật AI';
             setError(errorMessage);
             return { success: false, message: errorMessage };
-        } finally {
-            setLoading(false);
         }
     };
 
