@@ -235,6 +235,28 @@ export const useArticle = () => {
         }
     };
 
+    const retryAiArticle = async (articleId) => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const res = await articleService.retryAi(articleId);
+
+            return {
+                success: true,
+                message: "Đã yêu cầu cập nhật AI thành công!",
+                data: res
+            };
+        } catch (error) {
+            console.error("Error retrying AI:", error);
+            const errorMessage = error.message || 'Có lỗi xảy ra khi yêu cầu cập nhật AI';
+            setError(errorMessage);
+            return { success: false, message: errorMessage };
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const crawArticlesByCategory = async (crawRequest) => {
         try {
             setLoading(true);
@@ -334,6 +356,7 @@ export const useArticle = () => {
         changeArticleStatus,
         deleteArticle,
         updateArticle,
+        retryAiArticle,
 
         crawArticlesByCategory,
         getListCategoryCraw,

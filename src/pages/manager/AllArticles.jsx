@@ -53,6 +53,7 @@ const AllArticles = () => {
         loadArticles, 
         changeArticleStatus, 
         deleteArticle,
+        retryAiArticle,
         crawArticlesByCategory,  // ← Đã có sẵn
         getListCategoryCraw      // ← Mới thêm
     } = useArticle();
@@ -90,6 +91,11 @@ const AllArticles = () => {
             },
             { articleId, newStatus }
         );
+    };
+
+    const handleRetryAi = async (articleId) => {
+        const result = await retryAiArticle(articleId);
+        result.success ? showSuccess("Thành công", result.message) : showError("Lỗi", result.message);
     };
 
     // ✅ Handler mở Crawler Dialog
@@ -189,6 +195,7 @@ const AllArticles = () => {
                             articles={filtered}
                             onDelete={handleDelete}
                             onStatusChange={handleStatusChange}
+                            onRetryAi={handleRetryAi}
                             loading={isLoading}
                         />
 

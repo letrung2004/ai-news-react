@@ -34,6 +34,7 @@ export const ENDPOINTS = {
         GET_ALL_ARTICLE: '/content/articles/all-status',
         UPDATE_ARTICLE: articleId => `/content/articles/update/${articleId}`,
         UPDATE_ARTICLE_STATUS: articleId => `/content/articles/update-status/${articleId}`,
+        RETRY_AI: articleId => `/content/articles/${articleId}/retry-ai`,
 
         APPROVE_COMMENT: commentId => `/content/comments/${commentId}/approve`,
         DELETE_COMMENT: commentId => `/content/comments/${commentId}`,

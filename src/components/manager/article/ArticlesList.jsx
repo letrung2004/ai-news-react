@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
     Edit, Trash2, MoreVertical, User, Calendar,
-    FileText, CheckCircle, XCircle, Clock, Tag, Archive
+    FileText, CheckCircle, XCircle, Clock, Tag, Archive, RefreshCw
 } from "lucide-react";
 import SimpleLoading from "../../SimpleLoading";
 
@@ -44,7 +44,7 @@ const formatAuthors = (authors) => {
     return `${authors[0].name || authors[0]} +${authors.length - 1}`;
 };
 
-const ArticlesList = ({ articles, onDelete, onStatusChange, loading }) => {
+const ArticlesList = ({ articles, onDelete, onStatusChange, onRetryAi, loading }) => {
     const [openDropdown, setOpenDropdown] = useState(null);
 
     if (loading) return <SimpleLoading />;
@@ -117,8 +117,18 @@ const ArticlesList = ({ articles, onDelete, onStatusChange, loading }) => {
 
                             {/* Actions */}
                             <div className="flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                {!(article.summary && article.audioUrl && article.embedding) && (
+                                    <button
+                                        onClick={() => onRetryAi(article.id)}
+                                        title="Cập nhật AI (Retry AI)"
+                                        className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                    >
+                                        <RefreshCw className="w-4 h-4" />
+                                    </button>
+                                )}
+                                
                                 <Link to={`/manager/articles/update/${article.slug}`}>
-                                    <button className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
+                                    <button title="Chỉnh sửa" className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
                                         <Edit className="w-4 h-4" />
                                     </button>
                                 </Link>

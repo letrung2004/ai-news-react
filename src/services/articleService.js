@@ -42,6 +42,11 @@ export const articleService = {
         return response.data;
     },
 
+    retryAi: async (articleId) => {
+        const response = await AUTH_REQUEST.post(ENDPOINTS.ADMIN.RETRY_AI(articleId));
+        return response.data;
+    },
+
     //get detail article
     getDetailArticle: async (articleSlug) => {
         const response = await AUTH_REQUEST.get(ENDPOINTS.NEWS.GET_DETAIL_ARTICLE(articleSlug));
